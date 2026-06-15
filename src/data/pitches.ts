@@ -17,12 +17,12 @@
 // ---------------------------------------------------------------------------
 
 export type SectionId =
-  | 'about'
-  | 'education'
-  | 'experience'
-  | 'projects'
-  | 'skills'
-  | 'contact';
+  | "about"
+  | "education"
+  | "experience"
+  | "projects"
+  | "skills"
+  | "contact";
 
 export interface PitchType {
   id: string;
@@ -45,81 +45,85 @@ export interface PitchType {
 
 export const PITCHES: PitchType[] = [
   {
-    id: 'four-seam',
-    name: 'Four-Seam Fastball',
-    section: 'about',
+    id: "four-seam",
+    name: "Four-Seam Fastball",
+    section: "about",
     velocityMph: 94,
     spinRpm: 2350,
     spinAxisDeg: 340, // mostly rise (+z), slight arm-side tilt (-x)
     release: { x: -2.1, y: 55.0, z: 5.9 },
     target: { x: 0.2, z: 2.8 },
     movement: { horizontalInches: -4, verticalInches: 14 },
-    colorLabel: '#e5e0d5',
+    colorLabel: "#e5e0d5",
   },
   {
-    id: 'changeup',
-    name: 'Changeup',
-    section: 'education',
+    id: "changeup",
+    name: "Changeup",
+    section: "education",
     velocityMph: 83,
     spinRpm: 1650,
     spinAxisDeg: 270, // arm-side run, minimal rise (deceives by looking like fastball)
     release: { x: -2.1, y: 55.0, z: 5.8 }, // nearly identical to fastball
     target: { x: 0.1, z: 2.3 },
     movement: { horizontalInches: -9, verticalInches: 4 },
-    colorLabel: '#7ec8e3',
+    colorLabel: "#7ec8e3",
   },
   {
-    id: 'slider',
-    name: 'Slider',
-    section: 'experience',
+    id: "slider",
+    name: "Slider",
+    section: "experience",
     velocityMph: 86,
     spinRpm: 2500,
     spinAxisDeg: 115, // glove-side break (+x) + downward (-z)
     release: { x: -2.0, y: 54.5, z: 5.7 },
-    target: { x: -0.5, z: 2.3 },
+    target: { x: 0.5, z: 2.3 },
     movement: { horizontalInches: 4, verticalInches: -2 },
-    colorLabel: '#f5a623',
+    colorLabel: "#f5a623",
   },
   {
-    id: 'curveball',
-    name: 'Curveball',
-    section: 'projects',
+    id: "curveball",
+    name: "Curveball",
+    section: "projects",
     velocityMph: 78,
     spinRpm: 2700,
     spinAxisDeg: 185, // mostly downward (-z), very slight arm-side tilt
     release: { x: -2.0, y: 54.5, z: 6.0 }, // slightly higher arm slot
     target: { x: 0.0, z: 1.9 },
     movement: { horizontalInches: -3, verticalInches: -15 },
-    colorLabel: '#b06aff',
+    colorLabel: "#b06aff",
   },
   {
-    id: 'sinker',
-    name: 'Sinker',
-    section: 'skills',
+    id: "sinker",
+    name: "Sinker",
+    section: "skills",
     velocityMph: 91,
     spinRpm: 2100,
     spinAxisDeg: 235, // arm-side run (-x) + downward bias (-z)
     release: { x: -2.1, y: 55.0, z: 5.8 },
-    target: { x: 0.4, z: 2.1 },
+    target: { x: -0.4, z: 2.1 },
     movement: { horizontalInches: -10, verticalInches: 6 },
-    colorLabel: '#50c878',
+    colorLabel: "#50c878",
   },
   {
-    id: 'cutter',
-    name: 'Cutter',
-    section: 'contact',
+    id: "cutter",
+    name: "Cutter",
+    section: "contact",
     velocityMph: 89,
     spinRpm: 2400,
     spinAxisDeg: 25, // mostly rise (+z), slight glove-side cut (+x)
     release: { x: -2.0, y: 54.5, z: 5.8 },
-    target: { x: -0.3, z: 2.6 },
+    target: { x: 0.3, z: 2.6 },
     movement: { horizontalInches: 3, verticalInches: 9 },
-    colorLabel: '#ff6b6b',
+    colorLabel: "#ff6b6b",
   },
 ];
 
-export const PITCH_FOR_SECTION: Record<SectionId, PitchType> =
-  PITCHES.reduce<Record<SectionId, PitchType>>(
-    (acc, p) => { acc[p.section] = p; return acc; },
-    {} as Record<SectionId, PitchType>,
-  );
+export const PITCH_FOR_SECTION: Record<SectionId, PitchType> = PITCHES.reduce<
+  Record<SectionId, PitchType>
+>(
+  (acc, p) => {
+    acc[p.section] = p;
+    return acc;
+  },
+  {} as Record<SectionId, PitchType>,
+);
