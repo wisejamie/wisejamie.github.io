@@ -16,7 +16,7 @@ function SectionHeader({ children }: { children: ReactNode }) {
     <div
       style={{
         fontFamily: "monospace",
-        fontSize: 8,
+        fontSize: 10,
         fontWeight: 700,
         color: NAVY,
         letterSpacing: "0.2em",
@@ -41,7 +41,7 @@ function BulletList({ items }: { items: string[] }) {
             gap: 7,
             marginBottom: 4,
             fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize: 10.5,
+            fontSize: 12,
             color: "#1a1408",
             lineHeight: 1.45,
           }}
@@ -131,7 +131,6 @@ export function EducationCardBack({
       <div
         style={{
           background: CREAM,
-          // backgroundImage: RULED,
           padding: isMobile ? "10px 14px 12px" : "12px 20px 14px",
           borderBottom: `2px solid ${NAVY}`,
         }}
@@ -159,19 +158,6 @@ export function EducationCardBack({
             >
               {entry.name}
             </div>
-            {entry.location && (
-              <div
-                style={{
-                  fontFamily: "monospace",
-                  fontSize: 8,
-                  color: "#4a3c28",
-                  letterSpacing: "0.1em",
-                  marginTop: 4,
-                }}
-              >
-                {entry.location}
-              </div>
-            )}
           </div>
           <div
             style={{
@@ -183,35 +169,31 @@ export function EducationCardBack({
           >
             <div
               style={{
-                fontFamily: "monospace",
-                fontSize: isMobile ? 10 : 11,
-                fontWeight: 700,
+                fontFamily:
+                  '"Arial Black", "Franklin Gothic Heavy", Impact, sans-serif',
+                fontSize: isMobile ? 18 : 22,
+                fontWeight: 600,
                 color: NAVY,
-                letterSpacing: "0.05em",
+                letterSpacing: "0.03em",
+                lineHeight: 1,
+                textShadow: "0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
               {entry.school}
             </div>
-            <div
-              style={{
-                fontFamily: "monospace",
-                fontSize: 10,
-                color: "#2a3050",
-                letterSpacing: "0.03em",
-              }}
-            >
-              {entry.degree}
-            </div>
-            <div
-              style={{
-                fontFamily: "monospace",
-                fontSize: 9,
-                color: "#4a3c28",
-                letterSpacing: "0.05em",
-              }}
-            >
-              {entry.dates}
-            </div>
+            {entry.location && (
+              <div
+                style={{
+                  fontFamily: "monospace",
+                  fontSize: 12,
+                  color: "#4a3c28",
+                  letterSpacing: "0.1em",
+                  marginTop: 4,
+                }}
+              >
+                {entry.location}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -288,7 +270,7 @@ export function EducationCardBack({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1.5fr 1fr",
             gap: isMobile ? 14 : 0,
             marginBottom: 12,
           }}
