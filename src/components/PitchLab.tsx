@@ -14,6 +14,7 @@ import { PitchPicker } from './PitchPicker';
 import { MetricsHUD } from './MetricsHUD';
 import { PlateScene } from './PlateScene';
 import { createPitchAttempt } from '../lib/variation';
+import type { Handedness } from '../lib/variation';
 
 type SimState = 'idle' | 'throwing' | 'frozen';
 
@@ -51,6 +52,8 @@ export function PitchLab() {
   const [throwPitch, setThrowPitch] = useState<PitchType | null>(null);
   const [intendedTarget, setIntendedTarget] = useState<{ x: number; z: number } | null>(null);
 
+  const [pitcherHandedness, setPitcherHandedness] = useState<Handedness>('RHP');
+
   // Resize observer
   useEffect(() => {
     const obs = new ResizeObserver(entries => {
@@ -66,8 +69,21 @@ export function PitchLab() {
     setZone(projectStrikeZone(dims.w, dims.h));
   }, [dims]);
 
+  const handleHandednessChange = useCallback((h: Handedness) => {
+    if (h === pitcherHandedness) return;
+    setPitcherHandedness(h);
+    setCrossingHistory([]);
+    // Dismiss any frozen reveal — it belongs to the previous handedness
+    setSimState('idle');
+    setSelectedPitch(null);
+    setThrowPitch(null);
+    setIntendedTarget(null);
+    setFramePath([]);
+    setThrowProgress(0);
+  }, [pitcherHandedness]);
+
   const handleSelect = useCallback((pitch: PitchType) => {
-    const attempt = createPitchAttempt(pitch, selectedTarget);
+    const attempt = createPitchAttempt(pitch, selectedTarget, pitcherHandedness);
     const { frames: rawFrames, flightTimeMs: ftMs } = simulatePitch(attempt.pitch, attempt.actualTarget);
     const display = downsample(rawFrames, DISPLAY_FRAMES);
     const projected = display.map(f => project(f.pos, dims.w, dims.h));
@@ -76,7 +92,7 @@ export function PitchLab() {
     pendingMarkerRef.current = {
       x: arrival.x,
       z: arrival.z,
-      pitchId: pitch.id,
+      pitchId: pitch.id + pitcherHandedness,
       pitchName: pitch.name,
       color: pitch.colorLabel,
     };
@@ -88,7 +104,7 @@ export function PitchLab() {
     setFlightTimeMs(ftMs);
     setThrowProgress(0);
     setSimState('throwing');
-  }, [dims, selectedTarget]);
+  }, [dims, selectedTarget, pitcherHandedness]);
 
   const handleArrive = useCallback(() => {
     setSimState('frozen');
@@ -191,7 +207,7 @@ export function PitchLab() {
       }} />
 
       {/* Static scene: dirt, plate, foul lines, mound marker */}
-      <PlateScene svgWidth={dims.w} svgHeight={dims.h} />
+      <PlateScene svgWidth={dims.w} svgHeight={dims.h} handedness={pitcherHandedness} />
 
       {/* Always-on SVG: zone, target reticle, crossing markers */}
       {zone && (
@@ -358,6 +374,44 @@ export function PitchLab() {
         selectedId={selectedPitch?.id ?? null}
         disabled={throwing}
       />
+
+      {/* Handedness toggle — bottom left, mirrors speed control layout */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 24,
+          left: 16,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          fontFamily: 'monospace',
+          fontSize: 10,
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {(['RHP', 'LHP'] as const).map(h => (
+          <button
+            key={h}
+            onClick={() => handleHandednessChange(h)}
+            disabled={throwing}
+            style={{
+              background: pitcherHandedness === h ? 'rgba(245,166,35,0.15)' : 'rgba(0,0,0,0.55)',
+              border: `1px solid ${pitcherHandedness === h ? '#f5a623' : 'rgba(255,255,255,0.15)'}`,
+              borderRadius: 3,
+              color: pitcherHandedness === h ? '#f5a623' : '#555',
+              cursor: throwing ? 'not-allowed' : 'pointer',
+              fontFamily: 'monospace',
+              fontSize: 10,
+              letterSpacing: '0.05em',
+              padding: '4px 7px',
+              opacity: throwing ? 0.5 : 1,
+            }}
+          >
+            {h}
+          </button>
+        ))}
+      </div>
 
       {/* Playback speed control — rendered after PitchPicker so it sits on top */}
       <div

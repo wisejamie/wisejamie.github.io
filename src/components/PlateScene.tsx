@@ -3,6 +3,7 @@ import { project } from "../lib/projection";
 interface PlateSceneProps {
   svgWidth: number;
   svgHeight: number;
+  handedness?: 'RHP' | 'LHP';
 }
 
 // ---------------------------------------------------------------------------
@@ -49,7 +50,7 @@ function nearClipY(
 //   The foul lines are collinear with those angled edges, meeting at the apex.
 // ---------------------------------------------------------------------------
 
-export function PlateScene({ svgWidth, svgHeight }: PlateSceneProps) {
+export function PlateScene({ svgWidth, svgHeight, handedness = 'RHP' }: PlateSceneProps) {
   const p = (x: number, y: number, z: number) =>
     project({ x, y, z }, svgWidth, svgHeight);
 
@@ -126,7 +127,9 @@ export function PlateScene({ svgWidth, svgHeight }: PlateSceneProps) {
 
   // ── Mound markers ─────────────────────────────────────────────────────────
   const rubber = p(0, 60.5, 1.0);
-  const release = p(-2.1, 55.0, 5.9);
+  // Release side mirrors with handedness: RHP = catcher's left (−x), LHP = catcher's right (+x)
+  const releaseX = handedness === 'LHP' ? 2.1 : -2.1;
+  const release = p(releaseX, 55.0, 5.9);
 
   const cx = svgWidth / 2;
 
@@ -288,7 +291,7 @@ export function PlateScene({ svgWidth, svgHeight }: PlateSceneProps) {
         rx={1}
       />
 
-      {/* ── RHP release point glow ───────────────────────────────────────── */}
+      {/* ── Pitcher release point glow (side depends on handedness) ─────── */}
       <circle
         cx={release.x}
         cy={release.y}
@@ -305,7 +308,7 @@ export function PlateScene({ svgWidth, svgHeight }: PlateSceneProps) {
         fontFamily="ui-monospace, Consolas, monospace"
         letterSpacing="0.05em"
       >
-        RHP
+        {handedness}
       </text>
     </svg>
   );

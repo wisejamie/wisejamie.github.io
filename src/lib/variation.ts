@@ -2,23 +2,22 @@ import type { PitchType } from '../data/pitches';
 import { TARGET_CLAMP } from './projection';
 
 // ---------------------------------------------------------------------------
-// Per-throw pitch variation.
+// Per-throw pitch variation with handedness support.
 //
-// Base pitch data in pitches.ts is never mutated. Each call to
-// createPitchAttempt returns a fresh copy with realistic per-throw noise.
+// Base pitch data in pitches.ts is written for RHP.
+// LHP is derived at runtime by mirroring x-side values; base data is never
+// mutated.
 //
 // What drives what:
 //   velocityMph, spinRpm, spinAxisDeg, release  → actual physics path
 //   movement.horizontalInches / verticalInches  → HUD display ONLY
 //     (the physics sim reads spinRpm/spinAxisDeg, not movement values)
 //
-// Both the HUD values and the physical path vary each throw, but they are
-// not precisely coupled. The HUD values are estimated display numbers;
-// the path is what the Magnus model actually computes.
-//
 // intendedTarget — what the pitcher aimed at (shown in the reticle)
 // actualTarget   — intended ± command variation (passed to simulatePitch)
 // ---------------------------------------------------------------------------
+
+export type Handedness = 'RHP' | 'LHP';
 
 export interface PitchAttempt {
   pitch: PitchType;
@@ -36,61 +35,88 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 // Add noise to a movement value while preserving its sign.
-// The noise range is capped at 60% of abs(value) so the break direction
-// can never flip even for small base values.
+// Range is capped at 60% of abs(value) so break direction never flips.
 function varyMovement(value: number, range: number): number {
   if (value === 0) return rand(range * 0.5);
   const safeRange = Math.min(range, Math.abs(value) * 0.6);
   return value + rand(safeRange);
 }
 
+// ---------------------------------------------------------------------------
+// Mirror a base RHP pitch for a left-handed pitcher.
+//
+// Values that flip (x-axis / horizontal):
+//   release.x          → negated (LHP arm side = catcher's right = +x)
+//   target.x           → negated (default/random aim point mirrors)
+//   movement.horizontalInches → negated (glove-side / arm-side flip)
+//   spinAxisDeg        → (360 - deg) % 360
+//
+//     spinAxisDeg controls the Magnus force direction in the XZ plane:
+//       x-component = sin(axis),  z-component = cos(axis)
+//     Mirroring the horizontal force requires: sin(new) = -sin(old), cos unchanged.
+//     The unique solution mod 360 is: newAxis = (360 - oldAxis) % 360.
+//     Example: RHP changeup 270° (arm-side −x) → LHP 90° (arm-side +x) ✓
+//              RHP slider  115° (glove-side +x) → LHP 245° (glove-side −x) ✓
+//
+// Values that stay the same (vertical / speed):
+//   velocityMph, spinRpm, release.y, release.z, movement.verticalInches
+// ---------------------------------------------------------------------------
+export function mirrorPitchForHandedness(base: PitchType, handedness: Handedness): PitchType {
+  if (handedness === 'RHP') return base;
+  return {
+    ...base,
+    release: { ...base.release, x: -base.release.x },
+    target: { ...base.target, x: -base.target.x },
+    spinAxisDeg: (360 - base.spinAxisDeg) % 360,
+    movement: {
+      ...base.movement,
+      horizontalInches: -base.movement.horizontalInches,
+    },
+  };
+}
+
 export function createPitchAttempt(
   base: PitchType,
   selectedTarget: { x: number; z: number } | null,
+  handedness: Handedness = 'RHP',
 ): PitchAttempt {
-  // Fastball family (4-seam, sinker, cutter) has tighter mechanical variance.
-  const isFastball = base.velocityMph >= 88;
+  // Mirror the base pitch for handedness first. All subsequent variation runs
+  // on the mirrored values so the physics and display stay consistent.
+  // selectedTarget is an absolute plate coordinate — intentionally NOT mirrored.
+  const mb = mirrorPitchForHandedness(base, handedness);
+
+  const isFastball = mb.velocityMph >= 88;
 
   // ── Velocity ──────────────────────────────────────────────────────────────
-  // Fastballs: arm speed repeats tightly → ±1.5 mph
-  // Breaking/off-speed: grip pressure and pronation vary → ±2.5 mph
-  const velocityMph = base.velocityMph + rand(isFastball ? 1.5 : 2.5);
+  const velocityMph = mb.velocityMph + rand(isFastball ? 1.5 : 2.5);
 
   // ── Spin ──────────────────────────────────────────────────────────────────
-  // ±4% for fastballs, ±7% for breaking balls.
-  // Kept as a float internally; round only for HUD display (toLocaleString).
-  const spinRpm = Math.round(base.spinRpm * (1 + rand(isFastball ? 0.04 : 0.07)));
+  const spinRpm = Math.round(mb.spinRpm * (1 + rand(isFastball ? 0.04 : 0.07)));
 
   // ── Spin axis ─────────────────────────────────────────────────────────────
-  // Grip variation changes the tilt of the Magnus force vector.
-  // This directly affects the actual flight path (more than spinRpm alone).
-  const spinAxisDeg = base.spinAxisDeg + rand(isFastball ? 5 : 9);
+  // Variation is applied after mirroring, so the noise is symmetric around
+  // the already-correct LHP/RHP axis.
+  const spinAxisDeg = mb.spinAxisDeg + rand(isFastball ? 5 : 9);
 
   // ── Release point ─────────────────────────────────────────────────────────
   const release = {
-    x: base.release.x + rand(0.05),
-    y: base.release.y + rand(0.03),
-    z: base.release.z + rand(0.04),
+    x: mb.release.x + rand(0.05),
+    y: mb.release.y + rand(0.03),
+    z: mb.release.z + rand(0.04),
   };
 
   // ── Movement display (HUD only) ───────────────────────────────────────────
-  // Two sources of variation intentionally combined:
-  //   1. Spin-ratio scale: magnitude scales with RPM deviation (~±4–7%)
-  //   2. Independent noise: adds visible inch-level variation per throw
-  //
-  // Do NOT call Math.round here — keep decimals so the HUD (which already
-  // uses .toFixed(1)) can show values like "-14.3 in" instead of "-14.0 in".
-  //
-  // varyMovement() caps noise at 60% of the base value to prevent sign flips.
-  const spinRatio = spinRpm / base.spinRpm;
-  const breakRange = isFastball ? 1.5 : 3.0; // inches of independent variation
+  // mb.movement.horizontalInches is already sign-flipped for LHP.
+  // varyMovement() adds independent inch-level noise without flipping sign.
+  const spinRatio = spinRpm / mb.spinRpm;
+  const breakRange = isFastball ? 1.5 : 3.0;
   const movement = {
-    horizontalInches: varyMovement(base.movement.horizontalInches * spinRatio, breakRange),
-    verticalInches:   varyMovement(base.movement.verticalInches   * spinRatio, breakRange),
+    horizontalInches: varyMovement(mb.movement.horizontalInches * spinRatio, breakRange),
+    verticalInches:   varyMovement(mb.movement.verticalInches   * spinRatio, breakRange),
   };
 
   const pitch: PitchType = {
-    ...base,
+    ...mb,
     velocityMph,
     spinRpm,
     spinAxisDeg,
@@ -99,19 +125,16 @@ export function createPitchAttempt(
   };
 
   // ── Intended target ───────────────────────────────────────────────────────
-  // User-selected → use it directly.
-  // No selection → randomize near each pitch's natural location so
-  // pitch identity (high FF, low CB, arm-side CH, etc.) is preserved.
+  // User-selected → keep as-is (absolute plate coord, never mirrored).
+  // No selection → randomize near the mirrored default location.
   const intendedTarget = selectedTarget
     ? { ...selectedTarget }
     : {
-        x: clamp(base.target.x + rand(0.5),  TARGET_CLAMP.xMin, TARGET_CLAMP.xMax),
-        z: clamp(base.target.z + rand(0.35), TARGET_CLAMP.zMin, TARGET_CLAMP.zMax),
+        x: clamp(mb.target.x + rand(0.5),  TARGET_CLAMP.xMin, TARGET_CLAMP.xMax),
+        z: clamp(mb.target.z + rand(0.35), TARGET_CLAMP.zMin, TARGET_CLAMP.zMax),
       };
 
   // ── Command variation (tightened) ─────────────────────────────────────────
-  // Pitcher misses the intended spot by a small amount — visually subtle.
-  // Fastballs: ~±0.7 in;  breaking balls: ~±1.1 in.
   const cmdSpread = isFastball ? 0.06 : 0.09;
   const actualTarget = {
     x: clamp(intendedTarget.x + rand(cmdSpread), TARGET_CLAMP.xMin, TARGET_CLAMP.xMax),
