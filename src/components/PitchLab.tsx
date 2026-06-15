@@ -13,6 +13,7 @@ import { PitchSimulator } from './PitchSimulator';
 import { PitchPicker } from './PitchPicker';
 import { MetricsHUD } from './MetricsHUD';
 import { PlateScene } from './PlateScene';
+import { createPitchAttempt } from '../lib/variation';
 
 type SimState = 'idle' | 'throwing' | 'frozen';
 
@@ -46,6 +47,10 @@ export function PitchLab() {
   const [crossingHistory, setCrossingHistory] = useState<CrossingMarker[]>([]);
   const pendingMarkerRef = useRef<CrossingMarker | null>(null);
 
+  // Per-throw state: varied pitch copy for MetricsHUD + intended target for reticle
+  const [throwPitch, setThrowPitch] = useState<PitchType | null>(null);
+  const [intendedTarget, setIntendedTarget] = useState<{ x: number; z: number } | null>(null);
+
   // Resize observer
   useEffect(() => {
     const obs = new ResizeObserver(entries => {
@@ -62,8 +67,8 @@ export function PitchLab() {
   }, [dims]);
 
   const handleSelect = useCallback((pitch: PitchType) => {
-    const target = selectedTarget ?? pitch.target;
-    const { frames: rawFrames, flightTimeMs: ftMs } = simulatePitch(pitch, target);
+    const attempt = createPitchAttempt(pitch, selectedTarget);
+    const { frames: rawFrames, flightTimeMs: ftMs } = simulatePitch(attempt.pitch, attempt.actualTarget);
     const display = downsample(rawFrames, DISPLAY_FRAMES);
     const projected = display.map(f => project(f.pos, dims.w, dims.h));
 
@@ -77,6 +82,8 @@ export function PitchLab() {
     };
 
     setSelectedPitch(pitch);
+    setThrowPitch(attempt.pitch);
+    setIntendedTarget(attempt.intendedTarget);
     setFramePath(projected);
     setFlightTimeMs(ftMs);
     setThrowProgress(0);
@@ -98,6 +105,8 @@ export function PitchLab() {
   const handleDismiss = useCallback(() => {
     setSimState('idle');
     setSelectedPitch(null);
+    setThrowPitch(null);
+    setIntendedTarget(null);
     setFramePath([]);
     setThrowProgress(0);
   }, []);
@@ -152,10 +161,9 @@ export function PitchLab() {
   const frozen = simState === 'frozen';
   const throwing = simState === 'throwing';
 
-  // Derive the effective target to display in the reticle
-  const displayTarget =
-    selectedTarget ??
-    (selectedPitch ? selectedPitch.target : null);
+  // During a throw or freeze: show the pitcher's intended target for this attempt.
+  // In idle: show the user's persistent clicked target (if any).
+  const displayTarget = (throwing || frozen) ? intendedTarget : selectedTarget;
 
   return (
     <div
@@ -282,10 +290,10 @@ export function PitchLab() {
         />
       )}
 
-      {/* Metrics HUD */}
+      {/* Metrics HUD — uses per-throw varied pitch so displayed values reflect actual attempt */}
       {selectedPitch && (throwing || frozen) && (
         <MetricsHUD
-          pitch={selectedPitch}
+          pitch={throwPitch ?? selectedPitch}
           section={SECTIONS[selectedPitch.section]}
           progress={frozen ? 1 : throwProgress}
           frozen={frozen}
