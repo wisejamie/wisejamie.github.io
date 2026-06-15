@@ -12,12 +12,7 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-export function MetricsHUD({
-  pitch,
-  section,
-  progress,
-  frozen,
-}: MetricsHUDProps) {
+export function MetricsHUD({ pitch, progress }: MetricsHUDProps) {
   // Speed bleeds down slightly as the ball travels (energy loss to drag)
   const displaySpeed = lerp(
     pitch.velocityMph,
