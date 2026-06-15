@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { PitchType } from '../data/pitches';
+import { AnimatePresence } from 'framer-motion';
+import type { PitchType, SectionId } from '../data/pitches';
+import { PITCH_FOR_SECTION } from '../data/pitches';
 import { SECTIONS } from '../data/sections';
 import { simulatePitch, downsample } from '../lib/physics';
 import {
@@ -13,6 +15,10 @@ import { PitchSimulator } from './PitchSimulator';
 import { PitchPicker } from './PitchPicker';
 import { MetricsHUD } from './MetricsHUD';
 import { PlateScene } from './PlateScene';
+import { SectionNav } from './SectionNav';
+import { SectionPanel } from './SectionPanel';
+import { EducationBaseballCard } from './EducationBaseballCard';
+import { EDUCATION_ENTRIES } from '../data/portfolio';
 import { createPitchAttempt } from '../lib/variation';
 import type { Handedness } from '../lib/variation';
 
@@ -53,6 +59,8 @@ export function PitchLab() {
   const [intendedTarget, setIntendedTarget] = useState<{ x: number; z: number } | null>(null);
 
   const [pitcherHandedness, setPitcherHandedness] = useState<Handedness>('RHP');
+  // Whether the current/last throw was triggered by the section nav (shows panel) or the pitch picker (doesn't)
+  const [fromSection, setFromSection] = useState(false);
 
   // Resize observer
   useEffect(() => {
@@ -73,7 +81,6 @@ export function PitchLab() {
     if (h === pitcherHandedness) return;
     setPitcherHandedness(h);
     setCrossingHistory([]);
-    // Dismiss any frozen reveal — it belongs to the previous handedness
     setSimState('idle');
     setSelectedPitch(null);
     setThrowPitch(null);
@@ -106,6 +113,16 @@ export function PitchLab() {
     setSimState('throwing');
   }, [dims, selectedTarget, pitcherHandedness]);
 
+  const handleSectionSelect = useCallback((sectionId: SectionId) => {
+    setFromSection(true);
+    handleSelect(PITCH_FOR_SECTION[sectionId]);
+  }, [handleSelect]);
+
+  const handlePickerSelect = useCallback((pitch: PitchType) => {
+    setFromSection(false);
+    handleSelect(pitch);
+  }, [handleSelect]);
+
   const handleArrive = useCallback(() => {
     setSimState('frozen');
     if (pendingMarkerRef.current) {
@@ -125,6 +142,7 @@ export function PitchLab() {
     setIntendedTarget(null);
     setFramePath([]);
     setThrowProgress(0);
+    setFromSection(false);
   }, []);
 
   const handleProgress = useCallback((p: number) => {
@@ -133,7 +151,6 @@ export function PitchLab() {
 
   // Click handler: frozen → dismiss; idle + near zone → set target
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
-    // Don't intercept clicks on buttons or other interactive elements
     if ((e.target as HTMLElement).closest('button')) return;
 
     if (simState === 'frozen') {
@@ -176,10 +193,14 @@ export function PitchLab() {
 
   const frozen = simState === 'frozen';
   const throwing = simState === 'throwing';
+  const isMobile = dims.w < 640;
 
   // During a throw or freeze: show the pitcher's intended target for this attempt.
   // In idle: show the user's persistent clicked target (if any).
   const displayTarget = (throwing || frozen) ? intendedTarget : selectedTarget;
+
+  // CLEAR TARGET button left offset — push right of the section nav on desktop
+  const clearTargetLeft = isMobile ? 16 : 192;
 
   return (
     <div
@@ -306,8 +327,8 @@ export function PitchLab() {
         />
       )}
 
-      {/* Metrics HUD — uses per-throw varied pitch so displayed values reflect actual attempt */}
-      {selectedPitch && (throwing || frozen) && (
+      {/* Metrics HUD — during throw always; when frozen only for pitch-picker throws (section throws use SectionPanel) */}
+      {selectedPitch && (throwing || (frozen && !fromSection)) && (
         <MetricsHUD
           pitch={throwPitch ?? selectedPitch}
           section={SECTIONS[selectedPitch.section]}
@@ -316,34 +337,34 @@ export function PitchLab() {
         />
       )}
 
-      {/* Frozen section reveal */}
-      {frozen && selectedPitch && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-            pointerEvents: 'none',
-            fontFamily: 'monospace',
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          <div style={{ fontSize: 10, letterSpacing: '0.2em', color: '#666', marginBottom: 6 }}>
-            SECTION UNLOCKED
-          </div>
-          <div style={{ fontSize: 30, fontWeight: 700, color: '#e0ddd5' }}>
-            {SECTIONS[selectedPitch.section].label}
-          </div>
-          <div style={{ fontSize: 11, color: '#666', marginTop: 6 }}>
-            {SECTIONS[selectedPitch.section].tagline}
-          </div>
-          <div style={{ fontSize: 10, color: '#444', marginTop: 18 }}>
-            click anywhere · esc to reset
-          </div>
-        </div>
-      )}
+      {/* Section navigation */}
+      <SectionNav
+        simState={simState}
+        activeSectionId={selectedPitch?.section ?? null}
+        onSelect={handleSectionSelect}
+        containerWidth={dims.w}
+      />
+
+      {/* Section panel — animates in when frozen */}
+      <AnimatePresence>
+        {frozen && fromSection && selectedPitch && (
+          <SectionPanel
+            key={selectedPitch.section}
+            sectionId={selectedPitch.section}
+            pitch={throwPitch}
+            onClose={handleDismiss}
+            isMobile={isMobile}
+          >
+            {selectedPitch.section === 'education' && (
+              <EducationBaseballCard
+                entry={EDUCATION_ENTRIES[0]}
+                isMobile={isMobile}
+                cardWidth={isMobile ? 180 : 240}
+              />
+            )}
+          </SectionPanel>
+        )}
+      </AnimatePresence>
 
       {/* Reset target button */}
       {selectedTarget && simState !== 'throwing' && (
@@ -352,7 +373,7 @@ export function PitchLab() {
           style={{
             position: 'absolute',
             top: 16,
-            left: 16,
+            left: clearTargetLeft,
             background: 'rgba(0,0,0,0.55)',
             border: '1px solid rgba(245,166,35,0.4)',
             borderRadius: 4,
@@ -362,6 +383,7 @@ export function PitchLab() {
             letterSpacing: '0.06em',
             padding: '5px 10px',
             cursor: 'pointer',
+            zIndex: 10,
           }}
         >
           CLEAR TARGET
@@ -370,7 +392,7 @@ export function PitchLab() {
 
       {/* Pitch picker */}
       <PitchPicker
-        onSelect={handleSelect}
+        onSelect={handlePickerSelect}
         selectedId={selectedPitch?.id ?? null}
         disabled={throwing}
       />
