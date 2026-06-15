@@ -6,6 +6,10 @@ export interface SectionMeta {
   tagline: string;
 }
 
+export const SECTION_ORDER: SectionId[] = [
+  'about', 'education', 'experience', 'projects', 'skills', 'contact',
+];
+
 export const SECTIONS: Record<SectionId, SectionMeta> = {
   about:      { id: 'about',      label: 'About',      tagline: 'Direct intro. No fluff.' },
   education:  { id: 'education',  label: 'Education',  tagline: 'Development + timing.' },

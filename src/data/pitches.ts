@@ -117,3 +117,9 @@ export const PITCHES: PitchType[] = [
     colorLabel: '#ff6b6b',
   },
 ];
+
+export const PITCH_FOR_SECTION: Record<SectionId, PitchType> =
+  PITCHES.reduce<Record<SectionId, PitchType>>(
+    (acc, p) => { acc[p.section] = p; return acc; },
+    {} as Record<SectionId, PitchType>,
+  );
