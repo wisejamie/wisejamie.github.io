@@ -33,8 +33,8 @@ export interface PitchType {
   spinAxisDeg: number; // see convention above
   release: { x: number; y: number; z: number };
   target: { x: number; z: number }; // default plate target (y=0)
-  // Reported movement in inches — used for HUD display only,
-  // not for physics (physics derives movement from spinAxisDeg + spinRpm).
+  // Authored scouting movement in inches. Live throws replace this with
+  // movement measured from the simulated path vs a spinless reference.
   movement: { horizontalInches: number; verticalInches: number };
   colorLabel: string;
 }

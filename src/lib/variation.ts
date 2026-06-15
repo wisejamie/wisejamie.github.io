@@ -10,8 +10,8 @@ import { TARGET_CLAMP } from './projection';
 //
 // What drives what:
 //   velocityMph, spinRpm, spinAxisDeg, release  → actual physics path
-//   movement.horizontalInches / verticalInches  → HUD display ONLY
-//     (the physics sim reads spinRpm/spinAxisDeg, not movement values)
+//   movement.horizontalInches / verticalInches  → authored fallback/scouting values
+//     (live throws measure movement from the simulated physics path)
 //
 // intendedTarget — what the pitcher aimed at (shown in the reticle)
 // actualTarget   — intended ± command variation (passed to simulatePitch)
@@ -105,7 +105,7 @@ export function createPitchAttempt(
     z: mb.release.z + rand(0.04),
   };
 
-  // ── Movement display (HUD only) ───────────────────────────────────────────
+  // ── Authored movement fallback ────────────────────────────────────────────
   // mb.movement.horizontalInches is already sign-flipped for LHP.
   // varyMovement() adds independent inch-level noise without flipping sign.
   const spinRatio = spinRpm / mb.spinRpm;

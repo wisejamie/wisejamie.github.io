@@ -11,9 +11,15 @@ export interface SimFrame {
   t: number; // seconds since release
 }
 
+export interface PitchMovement {
+  horizontalInches: number;
+  verticalInches: number;
+}
+
 export interface SimResult {
   frames: SimFrame[];
   flightTimeMs: number; // total flight duration in milliseconds
+  movement: PitchMovement; // movement vs same-aim, spinless reference path
 }
 
 // ---------------------------------------------------------------------------
@@ -134,6 +140,39 @@ function runSim(
   return frames;
 }
 
+function plateCrossing(frames: SimFrame[]): Vec3 {
+  if (frames.length < 2) return frames[frames.length - 1].pos;
+
+  const b = frames[frames.length - 1].pos;
+  const a = frames[frames.length - 2].pos;
+  const dy = b.y - a.y;
+
+  if (dy === 0) return b;
+
+  const t = (0 - a.y) / dy;
+  return {
+    x: a.x + (b.x - a.x) * t,
+    y: 0,
+    z: a.z + (b.z - a.z) * t,
+  };
+}
+
+function measureMovement(
+  pitch: PitchType,
+  frames: SimFrame[],
+  aimTarget: { x: number; z: number },
+  dt: number,
+): PitchMovement {
+  const spinlessFrames = runSim({ ...pitch, spinRpm: 0 }, aimTarget, dt);
+  const actual = plateCrossing(frames);
+  const reference = plateCrossing(spinlessFrames);
+
+  return {
+    horizontalInches: (actual.x - reference.x) * 12,
+    verticalInches: (actual.z - reference.z) * 12,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -148,10 +187,12 @@ export function simulatePitch(
   dt = 0.001,
 ): SimResult {
   let aim = { x: target.x, z: target.z };
+  let aimUsed = { ...aim };
   let frames: SimFrame[] = [];
 
   for (let iter = 0; iter < 4; iter++) {
-    frames = runSim(pitch, aim, dt);
+    aimUsed = { ...aim };
+    frames = runSim(pitch, aimUsed, dt);
     const arrival = frames[frames.length - 1].pos;
     const errX = arrival.x - target.x;
     const errZ = arrival.z - target.z;
@@ -161,7 +202,8 @@ export function simulatePitch(
   }
 
   const flightTimeMs = frames[frames.length - 1].t * 1000;
-  return { frames, flightTimeMs };
+  const movement = measureMovement(pitch, frames, aimUsed, dt);
+  return { frames, flightTimeMs, movement };
 }
 
 // Downsample a frame array to at most `maxFrames` evenly-spaced entries,

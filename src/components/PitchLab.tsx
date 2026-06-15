@@ -91,7 +91,15 @@ export function PitchLab() {
 
   const handleSelect = useCallback((pitch: PitchType) => {
     const attempt = createPitchAttempt(pitch, selectedTarget, pitcherHandedness);
-    const { frames: rawFrames, flightTimeMs: ftMs } = simulatePitch(attempt.pitch, attempt.actualTarget);
+    const {
+      frames: rawFrames,
+      flightTimeMs: ftMs,
+      movement,
+    } = simulatePitch(attempt.pitch, attempt.actualTarget);
+    const measuredPitch = {
+      ...attempt.pitch,
+      movement,
+    };
     const display = downsample(rawFrames, DISPLAY_FRAMES);
     const projected = display.map(f => project(f.pos, dims.w, dims.h));
 
@@ -105,7 +113,7 @@ export function PitchLab() {
     };
 
     setSelectedPitch(pitch);
-    setThrowPitch(attempt.pitch);
+    setThrowPitch(measuredPitch);
     setIntendedTarget(attempt.intendedTarget);
     setFramePath(projected);
     setFlightTimeMs(ftMs);
