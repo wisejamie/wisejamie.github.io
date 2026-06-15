@@ -12,6 +12,7 @@ import type { ScreenPos, ZoneScreenRect } from '../lib/projection';
 import { PitchSimulator } from './PitchSimulator';
 import { PitchPicker } from './PitchPicker';
 import { MetricsHUD } from './MetricsHUD';
+import { PlateScene } from './PlateScene';
 
 type SimState = 'idle' | 'throwing' | 'frozen';
 
@@ -180,6 +181,9 @@ export function PitchLab() {
         background: 'rgba(255,255,255,0.05)',
         pointerEvents: 'none',
       }} />
+
+      {/* Static scene: dirt, plate, foul lines, mound marker */}
+      <PlateScene svgWidth={dims.w} svgHeight={dims.h} />
 
       {/* Always-on SVG: zone, target reticle, crossing markers */}
       {zone && (
