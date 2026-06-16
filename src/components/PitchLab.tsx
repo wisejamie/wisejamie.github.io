@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import type { PitchType, SectionId } from '../data/pitches';
 import { PITCH_FOR_SECTION } from '../data/pitches';
-import { SECTIONS } from '../data/sections';
+import { SECTIONS, SECTION_ORDER } from '../data/sections';
 import { simulatePitch, downsample } from '../lib/physics';
 import {
   project,
@@ -17,9 +17,13 @@ import { MetricsHUD } from './MetricsHUD';
 import { PlateScene } from './PlateScene';
 import { SectionNav } from './SectionNav';
 import { SectionPanel } from './SectionPanel';
-import { EducationBaseballCard } from './EducationBaseballCard';
+import { EducationSection } from './EducationSection';
 import { ContactCard } from './ContactCard';
-import { EDUCATION_ENTRIES, CONTACT_INFO } from '../data/portfolio';
+import { AboutSection } from './AboutSection';
+import { ExperienceSection } from './ExperienceSection';
+import { ProjectsSection } from './ProjectsSection';
+import { TripsSection } from './TripsSection';
+import { CONTACT_INFO } from '../data/portfolio';
 import { createPitchAttempt } from '../lib/variation';
 import type { Handedness } from '../lib/variation';
 
@@ -45,9 +49,11 @@ export function PitchLab() {
   const [simState, setSimState] = useState<SimState>('idle');
   const [selectedPitch, setSelectedPitch] = useState<PitchType | null>(null);
   const [framePath, setFramePath] = useState<ScreenPos[]>([]);
+  const [refFramePath, setRefFramePath] = useState<ScreenPos[]>([]);
   const [zone, setZone] = useState<ZoneScreenRect | null>(null);
   const [flightTimeMs, setFlightTimeMs] = useState(450);
   const [throwProgress, setThrowProgress] = useState(0);
+  const [hudHovered, setHudHovered] = useState(false);
 
   const [playbackSpeed, setPlaybackSpeed] = useState(0.5);
 
@@ -87,6 +93,8 @@ export function PitchLab() {
     setThrowPitch(null);
     setIntendedTarget(null);
     setFramePath([]);
+    setRefFramePath([]);
+    setHudHovered(false);
     setThrowProgress(0);
   }, [pitcherHandedness]);
 
@@ -94,6 +102,7 @@ export function PitchLab() {
     const attempt = createPitchAttempt(pitch, selectedTarget, pitcherHandedness);
     const {
       frames: rawFrames,
+      referenceFrames: rawRefFrames,
       flightTimeMs: ftMs,
       movement,
     } = simulatePitch(attempt.pitch, attempt.actualTarget);
@@ -103,6 +112,10 @@ export function PitchLab() {
     };
     const display = downsample(rawFrames, DISPLAY_FRAMES);
     const projected = display.map(f => project(f.pos, dims.w, dims.h));
+
+    const refDisplay = downsample(rawRefFrames, DISPLAY_FRAMES);
+    const projectedRef = refDisplay.map(f => project(f.pos, dims.w, dims.h));
+    setRefFramePath(projectedRef);
 
     const arrival = rawFrames[rawFrames.length - 1].pos;
     pendingMarkerRef.current = {
@@ -150,6 +163,8 @@ export function PitchLab() {
     setThrowPitch(null);
     setIntendedTarget(null);
     setFramePath([]);
+    setRefFramePath([]);
+    setHudHovered(false);
     setThrowProgress(0);
     setFromSection(false);
   }, []);
@@ -186,23 +201,29 @@ export function PitchLab() {
     }
   }, [simState, zone, dims, handleDismiss]);
 
-  // Escape key: frozen → dismiss; idle + target set → clear target
+  // Keyboard: Escape dismisses/clears; arrows navigate sections when panel is open
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      if (simState === 'frozen') {
-        handleDismiss();
-      } else if (simState === 'idle' && selectedTarget !== null) {
-        setSelectedTarget(null);
+      if (e.key === 'Escape') {
+        if (simState === 'frozen') handleDismiss();
+        else if (simState === 'idle' && selectedTarget !== null) setSelectedTarget(null);
+        return;
+      }
+      if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && simState === 'frozen' && fromSection && selectedPitch) {
+        const currentIdx = SECTION_ORDER.indexOf(selectedPitch.section);
+        const delta = e.key === 'ArrowLeft' ? -1 : 1;
+        const nextIdx = (currentIdx + delta + SECTION_ORDER.length) % SECTION_ORDER.length;
+        handleSectionSelect(SECTION_ORDER[nextIdx]);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [simState, selectedTarget, handleDismiss]);
+  }, [simState, selectedTarget, handleDismiss, fromSection, selectedPitch, handleSectionSelect]);
 
   const frozen = simState === 'frozen';
   const throwing = simState === 'throwing';
   const isMobile = dims.w < 640;
+  const panelOpen = frozen && fromSection;
 
   // During a throw or freeze: show the pitcher's intended target for this attempt.
   // In idle: show the user's persistent clicked target (if any).
@@ -333,6 +354,8 @@ export function PitchLab() {
           frozen={frozen}
           onArrive={handleArrive}
           onProgress={handleProgress}
+          refPath={refFramePath}
+          hudHovered={hudHovered}
         />
       )}
 
@@ -343,6 +366,7 @@ export function PitchLab() {
           section={SECTIONS[selectedPitch.section]}
           progress={frozen ? 1 : throwProgress}
           frozen={frozen}
+          onHoverChange={setHudHovered}
         />
       )}
 
@@ -365,11 +389,19 @@ export function PitchLab() {
             isMobile={isMobile}
           >
             {selectedPitch.section === 'education' && (
-              <EducationBaseballCard
-                entry={EDUCATION_ENTRIES[0]}
-                isMobile={isMobile}
-                cardWidth={isMobile ? 180 : 240}
-              />
+              <EducationSection isMobile={isMobile} />
+            )}
+            {selectedPitch.section === 'about' && (
+              <AboutSection isMobile={isMobile} />
+            )}
+            {selectedPitch.section === 'experience' && (
+              <ExperienceSection isMobile={isMobile} />
+            )}
+            {selectedPitch.section === 'projects' && (
+              <ProjectsSection isMobile={isMobile} />
+            )}
+            {selectedPitch.section === 'trips' && (
+              <TripsSection isMobile={isMobile} />
             )}
             {selectedPitch.section === 'contact' && (
               <ContactCard info={CONTACT_INFO} isMobile={isMobile} />
@@ -379,7 +411,7 @@ export function PitchLab() {
       </AnimatePresence>
 
       {/* Reset target button */}
-      {selectedTarget && simState !== 'throwing' && (
+      {selectedTarget && simState !== 'throwing' && !panelOpen && (
         <button
           onClick={(e) => { e.stopPropagation(); setSelectedTarget(null); }}
           style={{
@@ -410,7 +442,7 @@ export function PitchLab() {
       />
 
       {/* Handedness toggle — bottom left, mirrors speed control layout */}
-      <div
+      {!panelOpen && <div
         style={{
           position: 'absolute',
           bottom: 24,
@@ -445,10 +477,10 @@ export function PitchLab() {
             {h}
           </button>
         ))}
-      </div>
+      </div>}
 
       {/* Playback speed control — rendered after PitchPicker so it sits on top */}
-      <div
+      {!panelOpen && <div
         style={{
           position: 'absolute',
           bottom: 24,
@@ -483,7 +515,7 @@ export function PitchLab() {
             {s}x
           </button>
         ))}
-      </div>
+      </div>}
     </div>
   );
 }

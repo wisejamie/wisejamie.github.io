@@ -12,11 +12,11 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
       <div
         style={{
           fontFamily: "monospace",
-          fontSize: isMobile ? 22 : 28,
+          fontSize: isMobile ? 28 : 36,
           fontWeight: 700,
           color: "#f0ece2",
           letterSpacing: "0.03em",
-          marginBottom: 10,
+          marginBottom: 14,
         }}
       >
         {info.headline}
@@ -36,14 +36,14 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
       </div> */}
 
       {/* Contact rows */}
-      <div style={{ marginBottom: 36 }}>
+      <div style={{ marginBottom: 48 }}>
         <div
           style={{
             fontFamily: "monospace",
-            fontSize: 8,
+            fontSize: 11,
             color: "#638971",
             letterSpacing: "0.2em",
-            marginBottom: 16,
+            marginBottom: 20,
           }}
         >
           CHANNELS
@@ -54,17 +54,17 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
               style={{
                 display: "flex",
                 alignItems: "baseline",
-                gap: isMobile ? 12 : 24,
-                padding: "13px 0",
+                gap: isMobile ? 16 : 28,
+                padding: "16px 0",
               }}
             >
               <span
                 style={{
                   fontFamily: "monospace",
-                  fontSize: 8,
+                  fontSize: 11,
                   color: "#638971",
                   letterSpacing: "0.18em",
-                  minWidth: isMobile ? 68 : 80,
+                  minWidth: isMobile ? 80 : 96,
                   flexShrink: 0,
                 }}
               >
@@ -76,7 +76,7 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
                 aria-label={`${label}: ${display}`}
                 style={{
                   fontFamily: "monospace",
-                  fontSize: isMobile ? 13 : 15,
+                  fontSize: isMobile ? 16 : 18,
                   color: "#c8c4b8",
                   textDecoration: "none",
                   letterSpacing: "0.02em",
@@ -123,10 +123,10 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
         <div
           style={{
             fontFamily: "monospace",
-            fontSize: 8,
+            fontSize: 11,
             color: "#638971",
             letterSpacing: "0.2em",
-            marginBottom: 16,
+            marginBottom: 20,
           }}
         >
           RESUME
@@ -134,7 +134,7 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
         <div
           style={{
             display: "flex",
-            gap: 10,
+            gap: 12,
             alignItems: "center",
             flexWrap: "wrap",
           }}
@@ -151,10 +151,10 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
               color: "#0e1a12",
               borderRadius: 4,
               fontFamily: "monospace",
-              fontSize: isMobile ? 11 : 12,
+              fontSize: isMobile ? 13 : 15,
               fontWeight: 700,
               letterSpacing: "0.1em",
-              padding: isMobile ? "9px 16px" : "10px 20px",
+              padding: isMobile ? "11px 20px" : "13px 26px",
               textDecoration: "none",
               transition: "filter 0.15s",
             }}
@@ -180,9 +180,9 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
               color: "#c8c4b8",
               borderRadius: 4,
               fontFamily: "monospace",
-              fontSize: isMobile ? 10 : 11,
+              fontSize: isMobile ? 12 : 14,
               letterSpacing: "0.1em",
-              padding: isMobile ? "9px 12px" : "10px 14px",
+              padding: isMobile ? "11px 16px" : "13px 20px",
               textDecoration: "none",
               border: "1px solid rgba(255,255,255,0.12)",
               transition: "color 0.15s, border-color 0.15s",

@@ -1,4 +1,4 @@
-import { PitchLab } from './components/PitchLab';
+import { PitchLab } from "./components/PitchLab";
 
 export default function App() {
   return <PitchLab />;
