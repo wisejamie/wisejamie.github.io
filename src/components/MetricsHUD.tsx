@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { PitchType } from "../data/pitches";
 import type { SectionMeta } from "../data/sections";
 
@@ -6,13 +7,26 @@ interface MetricsHUDProps {
   section: SectionMeta;
   progress: number; // 0–1, how far through the flight
   frozen: boolean;
+  onHoverChange?: (hovered: boolean) => void;
 }
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-export function MetricsHUD({ pitch, progress }: MetricsHUDProps) {
+export function MetricsHUD({ pitch, progress, onHoverChange }: MetricsHUDProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    onHoverChange?.(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    onHoverChange?.(false);
+  };
+
   // Speed bleeds down slightly as the ball travels (energy loss to drag)
   const displaySpeed = lerp(
     pitch.velocityMph,
@@ -36,6 +50,8 @@ export function MetricsHUD({ pitch, progress }: MetricsHUDProps) {
 
   return (
     <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{
         position: "absolute",
         top: 16,
@@ -49,6 +65,7 @@ export function MetricsHUD({ pitch, progress }: MetricsHUDProps) {
         padding: "10px 14px",
         minWidth: 170,
         lineHeight: 1.9,
+        cursor: "default",
       }}
     >
       {rows.map(([label, value]) => (
@@ -69,6 +86,48 @@ export function MetricsHUD({ pitch, progress }: MetricsHUDProps) {
           </span>
         </div>
       ))}
+
+      {isHovered && (
+        <div
+          style={{
+            marginTop: 8,
+            paddingTop: 8,
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              color: "rgba(200,210,220,0.45)",
+              fontSize: 10,
+              letterSpacing: "0.04em",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                width: 18,
+                borderTop: "1px dashed rgba(200,210,220,0.45)",
+                flexShrink: 0,
+              }}
+            />
+            <span>no-spin path</span>
+          </div>
+          <div
+            style={{
+              fontSize: 10,
+              color: "rgba(255,255,255,0.22)",
+              letterSpacing: "0.03em",
+              marginTop: 3,
+              paddingLeft: 24,
+            }}
+          >
+            spin creates the break
+          </div>
+        </div>
+      )}
     </div>
   );
 }

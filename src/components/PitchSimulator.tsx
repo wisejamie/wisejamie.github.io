@@ -14,6 +14,8 @@ interface PitchSimulatorProps {
   frozen: boolean;
   onArrive: () => void;
   onProgress: (progress: number) => void;
+  refPath?: ScreenPos[]; // spinless reference for ghost trail
+  hudHovered?: boolean;  // ghost trail only visible when HUD is hovered
 }
 
 export function PitchSimulator({
@@ -26,6 +28,8 @@ export function PitchSimulator({
   frozen,
   onArrive,
   onProgress,
+  refPath,
+  hudHovered,
 }: PitchSimulatorProps) {
   const [frameIndex, setFrameIndex] = useState(0);
 
@@ -106,12 +110,29 @@ export function PitchSimulator({
   const trailPoints = path.slice(0, frameIndex + 1);
   const spinProgress = frameIndex / Math.max(1, path.length - 1);
 
+  // Ghost trail: slice refPath to match current animation progress
+  const showGhost = hudHovered && refPath && refPath.length >= 2;
+  const ghostPoints = showGhost
+    ? (frozen ? refPath! : refPath!.slice(0, frameIndex + 1))
+    : [];
+
   return (
     <svg
       width={svgWidth}
       height={svgHeight}
       style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
     >
+      {showGhost && ghostPoints.length >= 2 && (
+        <polyline
+          points={ghostPoints.map(p => `${p.x},${p.y}`).join(' ')}
+          fill="none"
+          stroke="rgba(190,205,215,0.22)"
+          strokeWidth={1}
+          strokeDasharray="4 5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      )}
       <PitchTrail points={trailPoints} color={pitch.colorLabel} />
       <Baseball
         cx={current.x}

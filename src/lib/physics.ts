@@ -18,6 +18,7 @@ export interface PitchMovement {
 
 export interface SimResult {
   frames: SimFrame[];
+  referenceFrames: SimFrame[]; // spinless, same compensated aim — used for ghost trail
   flightTimeMs: number; // total flight duration in milliseconds
   movement: PitchMovement; // movement vs same-aim, spinless reference path
 }
@@ -162,14 +163,17 @@ function measureMovement(
   frames: SimFrame[],
   aimTarget: { x: number; z: number },
   dt: number,
-): PitchMovement {
-  const spinlessFrames = runSim({ ...pitch, spinRpm: 0 }, aimTarget, dt);
+): { movement: PitchMovement; referenceFrames: SimFrame[] } {
+  const referenceFrames = runSim({ ...pitch, spinRpm: 0 }, aimTarget, dt);
   const actual = plateCrossing(frames);
-  const reference = plateCrossing(spinlessFrames);
+  const reference = plateCrossing(referenceFrames);
 
   return {
-    horizontalInches: (actual.x - reference.x) * 12,
-    verticalInches: (actual.z - reference.z) * 12,
+    movement: {
+      horizontalInches: (actual.x - reference.x) * 12,
+      verticalInches: (actual.z - reference.z) * 12,
+    },
+    referenceFrames,
   };
 }
 
@@ -202,8 +206,8 @@ export function simulatePitch(
   }
 
   const flightTimeMs = frames[frames.length - 1].t * 1000;
-  const movement = measureMovement(pitch, frames, aimUsed, dt);
-  return { frames, flightTimeMs, movement };
+  const { movement, referenceFrames } = measureMovement(pitch, frames, aimUsed, dt);
+  return { frames, referenceFrames, flightTimeMs, movement };
 }
 
 // Downsample a frame array to at most `maxFrames` evenly-spaced entries,
