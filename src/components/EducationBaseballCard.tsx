@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { EducationEntry } from "../data/portfolio";
 import { EducationCardBack } from "./EducationCardBack";
@@ -7,17 +7,21 @@ interface EducationBaseballCardProps {
   entry: EducationEntry;
   isMobile?: boolean;
   cardWidth?: number;
+  // When provided the card stays on its front and fires this instead of flipping.
+  // Used by EducationSection so the section owns the back/nav state.
+  onCardClick?: () => void;
 }
 
 export function EducationBaseballCard({
   entry,
   isMobile = false,
   cardWidth = 240,
+  onCardClick,
 }: EducationBaseballCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [focused, setFocused] = useState(false);
 
-  const { name, school, degree, dates, imageUrl } = entry;
+  const { name, school, degree, imageUrl } = entry;
 
   const W = cardWidth;
   const H = Math.round(W * (3.5 / 2.5));
@@ -47,8 +51,27 @@ export function EducationBaseballCard({
 
   const toggle = (e?: React.MouseEvent | React.KeyboardEvent) => {
     e?.stopPropagation();
-    setIsFlipped((f) => !f);
+    if (onCardClick) {
+      onCardClick();
+    } else {
+      setIsFlipped((f) => !f);
+    }
   };
+
+  // Global spacebar — only active in standalone mode (not when section owns state)
+  useEffect(() => {
+    if (onCardClick) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== " ") return;
+      const t = e.target as HTMLElement;
+      if (t.tagName === "BUTTON" || t.tagName === "INPUT" || t.tagName === "A")
+        return;
+      e.preventDefault();
+      setIsFlipped((f) => !f);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCardClick]);
 
   const frontCard = (
     <div
@@ -280,9 +303,9 @@ export function EducationBaseballCard({
           </div>
 
           {/* Footer with dates */}
-          <div
+          {/* <div
             style={{
-              background: `linear-gradient(180deg, #efe3c3 0%, #d7c89f 100%)`,
+              background: TOPPS.creamDark,
               padding: `${Math.round(W * 0.012)}px 6px`,
               textAlign: "center",
               borderTop: "0.5px solid rgba(0,0,0,0.1)",
@@ -293,13 +316,13 @@ export function EducationBaseballCard({
               style={{
                 fontFamily: '"Arial Black", Impact, fantasy',
                 fontSize: Math.round(W * 0.045),
-                color: "TOPPS.DATE_INK",
+                color: "TOPPS.dateInk",
                 letterSpacing: "0.18em",
               }}
             >
               {dates}
             </span>
-          </div>
+          </div> */}
         </div>
 
         {/* Print texture */}
@@ -333,7 +356,7 @@ export function EducationBaseballCard({
           pointerEvents: "none",
         }}
       >
-        CLICK CARD TO FLIP ↻
+        {onCardClick ? "CLICK TO FLIP ↻" : "CLICK · SPACE TO FLIP ↻"}
       </div>
     </div>
   );
