@@ -21,7 +21,7 @@ export type SectionId =
   | "education"
   | "experience"
   | "projects"
-  | "skills"
+  | "trips"
   | "contact";
 
 export interface PitchType {
@@ -95,7 +95,7 @@ export const PITCHES: PitchType[] = [
   {
     id: "sinker",
     name: "Sinker",
-    section: "skills",
+    section: "trips",
     velocityMph: 91,
     spinRpm: 2100,
     spinAxisDeg: 235, // arm-side run (-x) + downward bias (-z)

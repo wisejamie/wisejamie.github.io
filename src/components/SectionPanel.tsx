@@ -13,7 +13,7 @@ interface SectionPanelProps {
 
 export function SectionPanel({
   sectionId,
-  pitch,
+  pitch: _pitch,
   onClose,
   isMobile,
   children,
@@ -45,10 +45,10 @@ export function SectionPanel({
       {/* Inner layout: constrained width, centered */}
       <div
         style={{
-          maxWidth: 760,
+          maxWidth: 1024,
           width: "100%",
           margin: "0 auto",
-          padding: isMobile ? "24px 20px 48px" : "48px 40px 80px",
+          padding: isMobile ? "28px 24px 64px" : "56px 52px 100px",
           display: "flex",
           flexDirection: "column",
           minHeight: "100%",
@@ -60,17 +60,17 @@ export function SectionPanel({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            marginBottom: 32,
+            marginBottom: 24,
           }}
         >
           <div>
             <div
               style={{
                 fontFamily: "monospace",
-                fontSize: 9,
+                fontSize: 11,
                 color: "#638971",
                 letterSpacing: "0.2em",
-                marginBottom: 10,
+                marginBottom: 14,
               }}
             >
               {String(sectionNum).padStart(2, "0")} /{" "}
@@ -79,7 +79,7 @@ export function SectionPanel({
             <div
               style={{
                 fontFamily: "monospace",
-                fontSize: isMobile ? 36 : 52,
+                fontSize: isMobile ? 36 : 48,
                 fontWeight: 700,
                 color: "#f0ece2",
                 letterSpacing: "0.01em",
@@ -108,8 +108,8 @@ export function SectionPanel({
               color: "#638971",
               cursor: "pointer",
               fontFamily: "monospace",
-              fontSize: 14,
-              padding: "6px 10px",
+              fontSize: 17,
+              padding: "8px 14px",
               lineHeight: 1,
               marginTop: 4,
               flexShrink: 0,
@@ -135,16 +135,7 @@ export function SectionPanel({
           style={{
             height: 1,
             background: "rgba(255,255,255,0.06)",
-            marginBottom: 28,
-          }}
-        />
-
-        {/* Divider */}
-        <div
-          style={{
-            height: 1,
-            background: "rgba(255,255,255,0.06)",
-            marginBottom: 28,
+            marginBottom: 10,
           }}
         />
 
@@ -188,17 +179,22 @@ export function SectionPanel({
           </div>
         )}
 
-        {/* Dismiss hint */}
+        {/* Keyboard hints */}
         <div
           style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: isMobile ? 16 : 32,
+            flexWrap: "wrap",
             fontFamily: "monospace",
-            fontSize: 8,
-            color: "#1e2820",
-            letterSpacing: "0.15em",
-            textAlign: "center",
+            fontSize: 11,
+            color: "#638971",
+            letterSpacing: "0.13em",
           }}
         >
-          ESC OR CLICK OUTSIDE TO CLOSE
+          <span>← → NAVIGATE SECTIONS</span>
+          <span>·</span>
+          <span>ESC TO CLOSE</span>
         </div>
       </div>
     </motion.div>
