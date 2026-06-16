@@ -33,8 +33,8 @@ export const CONTACT_INFO: ContactInfo = {
     },
     {
       label: "LINKEDIN",
-      display: "linkedin.com/in/jamie-wise-534122251",
-      href: "https://www.linkedin.com/in/jamie-wise-534122251",
+      display: "linkedin.com/in/jamie-wise-",
+      href: "https://www.linkedin.com/in/jamie-wise-",
       external: true,
     },
   ],
