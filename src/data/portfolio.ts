@@ -1,5 +1,46 @@
 // Portfolio content data — update placeholder values when ready.
 
+export interface ContactLink {
+  label: string;
+  display: string;
+  href: string;
+  external: boolean;
+}
+
+export interface ContactInfo {
+  headline: string;
+  subline: string;
+  links: ContactLink[];
+  resumePath: string;
+}
+
+export const CONTACT_INFO: ContactInfo = {
+  headline: "LET'S CONNECT!",
+  subline:
+    "Reach out for opportunities, collaborations, or project conversations.",
+  links: [
+    {
+      label: "EMAIL",
+      display: "wisejamie2@gmail.com",
+      href: "mailto:wisejamie2@gmail.com",
+      external: false,
+    },
+    {
+      label: "GITHUB",
+      display: "github.com/wisejamie",
+      href: "https://github.com/wisejamie",
+      external: true,
+    },
+    {
+      label: "LINKEDIN",
+      display: "linkedin.com/in/jamie-wise-534122251",
+      href: "https://www.linkedin.com/in/jamie-wise-534122251",
+      external: true,
+    },
+  ],
+  resumePath: "/resume/Jamie_Wise_CV.pdf",
+};
+
 export interface EducationEntry {
   name: string;
   school: string;

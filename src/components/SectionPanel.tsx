@@ -68,7 +68,7 @@ export function SectionPanel({
               style={{
                 fontFamily: "monospace",
                 fontSize: 9,
-                color: "#2e4035",
+                color: "#638971",
                 letterSpacing: "0.2em",
                 marginBottom: 10,
               }}
@@ -105,7 +105,7 @@ export function SectionPanel({
               background: "none",
               border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: 4,
-              color: "#3a4a3e",
+              color: "#638971",
               cursor: "pointer",
               fontFamily: "monospace",
               fontSize: 14,
@@ -138,106 +138,6 @@ export function SectionPanel({
             marginBottom: 28,
           }}
         />
-
-        {/* Pitch + metrics row */}
-        {pitch && (
-          <div style={{ marginBottom: 32 }}>
-            <div
-              style={{
-                fontFamily: "monospace",
-                fontSize: 8,
-                color: "#2e4035",
-                letterSpacing: "0.2em",
-                marginBottom: 14,
-              }}
-            >
-              DELIVERED VIA
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: isMobile ? 16 : 40,
-                flexWrap: "wrap",
-              }}
-            >
-              {/* Pitch name */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 9,
-                  minWidth: 160,
-                }}
-              >
-                <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: pitch.colorLabel,
-                    boxShadow: `0 0 8px ${pitch.colorLabel}70`,
-                    flexShrink: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: 14,
-                    color: "#c8c4b8",
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  {pitch.name}
-                </span>
-              </div>
-
-              {/* Metrics */}
-              {[
-                {
-                  label: "SPEED",
-                  value: `${pitch.velocityMph.toFixed(0)} mph`,
-                },
-                {
-                  label: "SPIN",
-                  value: `${pitch.spinRpm.toLocaleString()} rpm`,
-                },
-                {
-                  label: "H-BREAK",
-                  value: `${pitch.movement.horizontalInches >= 0 ? "+" : ""}${pitch.movement.horizontalInches.toFixed(1)}"`,
-                },
-                {
-                  label: "V-BREAK",
-                  value: `${pitch.movement.verticalInches >= 0 ? "+" : ""}${pitch.movement.verticalInches.toFixed(1)}"`,
-                },
-              ].map(({ label, value }) => (
-                <div key={label}>
-                  <div
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: 7,
-                      color: "#2e4035",
-                      letterSpacing: "0.2em",
-                      marginBottom: 3,
-                    }}
-                  >
-                    {label}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: 16,
-                      color: "#cec9bc",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    {value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Divider */}
         <div

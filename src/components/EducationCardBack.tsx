@@ -7,9 +7,17 @@ interface EducationCardBackProps {
   onFlipBack: () => void;
 }
 
-const CREAM = "#f0e8d2";
-const NAVY = "#182040";
-const NAVY_MID = "#243060";
+const CREAM = "#c9c4aa"; // faded paper/off-white
+const TOPPS_YELLOW = "#c8bd32"; // main yellow stat-box color
+
+const TOPPS_BLUE = "#344d6e"; // main 1987 Topps blue
+
+const INK = "#213442"; // dark printed ink
+const LINE = "#6f7a72"; // table/divider lines
+
+// const CREAM = "#f0e8d2";
+// const NAVY = "#182040";
+// const NAVY_MID = "#243060";
 
 function SectionHeader({ children }: { children: ReactNode }) {
   return (
@@ -18,11 +26,11 @@ function SectionHeader({ children }: { children: ReactNode }) {
         fontFamily: "monospace",
         fontSize: 10,
         fontWeight: 700,
-        color: NAVY,
+        color: TOPPS_BLUE,
+        borderBottom: `1.5px solid ${LINE}`,
         letterSpacing: "0.2em",
         marginBottom: 7,
         paddingBottom: 4,
-        borderBottom: `1.5px solid rgba(24,32,64,0.2)`,
       }}
     >
       {children}
@@ -46,9 +54,7 @@ function BulletList({ items }: { items: string[] }) {
             lineHeight: 1.45,
           }}
         >
-          <span style={{ color: "#8a1818", flexShrink: 0, marginTop: 1 }}>
-            •
-          </span>
+          <span style={{ color: TOPPS_BLUE }}>◆</span>
           <span>{item}</span>
         </li>
       ))}
@@ -76,7 +82,10 @@ export function EducationCardBack({
       {/* ── Header band ──────────────────────────────────────────────────── */}
       <div
         style={{
-          background: NAVY,
+          background: TOPPS_YELLOW,
+          color: INK,
+          borderTop: `2px solid ${TOPPS_BLUE}`,
+          borderBottom: `2px solid ${TOPPS_BLUE}`,
           padding: isMobile ? "8px 14px" : "9px 20px",
           display: "flex",
           justifyContent: "space-between",
@@ -87,7 +96,7 @@ export function EducationCardBack({
           style={{
             fontFamily: "monospace",
             fontSize: isMobile ? 9 : 10,
-            color: "rgba(255,255,255,0.82)",
+            color: "TOPPS_BLUE",
             letterSpacing: "0.22em",
             fontWeight: 700,
           }}
@@ -99,7 +108,7 @@ export function EducationCardBack({
             style={{
               fontFamily: "monospace",
               fontSize: 8,
-              color: "rgba(255,255,255,0.35)",
+              color: "TOPPS_BLUE",
               letterSpacing: "0.1em",
             }}
           >
@@ -111,10 +120,10 @@ export function EducationCardBack({
               onFlipBack();
             }}
             style={{
-              background: "rgba(255,255,255,0.07)",
-              border: "1px solid rgba(255,255,255,0.18)",
+              background: "CREAM",
+              border: "1px solid TOPPS_BLUE",
               borderRadius: 3,
-              color: "rgba(255,255,255,0.55)",
+              color: "TOPPS_BLUE",
               cursor: "pointer",
               fontFamily: "monospace",
               fontSize: 9,
@@ -132,7 +141,7 @@ export function EducationCardBack({
         style={{
           background: CREAM,
           padding: isMobile ? "10px 14px 12px" : "12px 20px 14px",
-          borderBottom: `2px solid ${NAVY}`,
+          borderBottom: `2px solid ${INK}`,
         }}
       >
         <div
@@ -150,7 +159,7 @@ export function EducationCardBack({
                   '"Arial Black", "Franklin Gothic Heavy", Impact, sans-serif',
                 fontSize: isMobile ? 26 : 34,
                 fontWeight: 900,
-                color: NAVY,
+                color: INK,
                 letterSpacing: "0.03em",
                 lineHeight: 1,
                 textShadow: "0 1px 0 rgba(255,255,255,0.6)",
@@ -173,7 +182,7 @@ export function EducationCardBack({
                   '"Arial Black", "Franklin Gothic Heavy", Impact, sans-serif',
                 fontSize: isMobile ? 18 : 22,
                 fontWeight: 600,
-                color: NAVY,
+                color: INK,
                 letterSpacing: "0.03em",
                 lineHeight: 1,
                 textShadow: "0 1px 0 rgba(255,255,255,0.6)",
@@ -201,14 +210,17 @@ export function EducationCardBack({
       {/* ── Stats strip ───────────────────────────────────────────────────── */}
       <div
         style={{
-          background: NAVY_MID,
+          background: TOPPS_BLUE,
+          color: "#d8d2ae",
+          borderBottom: `3px solid ${TOPPS_YELLOW}`,
+          // background: NAVY_MID,
           padding: isMobile ? "8px 14px" : "10px 22px",
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1.4fr 0.9fr 0.8fr",
           gap: isMobile ? 8 : 18,
           alignItems: "center",
           borderTop: "1px solid rgba(255,255,255,0.08)",
-          borderBottom: "1px solid rgba(0,0,0,0.28)",
+          // borderBottom: "1px solid rgba(0,0,0,0.28)",
         }}
       >
         {[
@@ -313,7 +325,7 @@ export function EducationCardBack({
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <div
         style={{
-          background: "#e4dcca",
+          background: "CREAM",
           borderTop: `1.5px solid rgba(24,32,64,0.15)`,
           padding: "4px 20px",
           display: "flex",

@@ -18,7 +18,8 @@ import { PlateScene } from './PlateScene';
 import { SectionNav } from './SectionNav';
 import { SectionPanel } from './SectionPanel';
 import { EducationBaseballCard } from './EducationBaseballCard';
-import { EDUCATION_ENTRIES } from '../data/portfolio';
+import { ContactCard } from './ContactCard';
+import { EDUCATION_ENTRIES, CONTACT_INFO } from '../data/portfolio';
 import { createPitchAttempt } from '../lib/variation';
 import type { Handedness } from '../lib/variation';
 
@@ -369,6 +370,9 @@ export function PitchLab() {
                 isMobile={isMobile}
                 cardWidth={isMobile ? 180 : 240}
               />
+            )}
+            {selectedPitch.section === 'contact' && (
+              <ContactCard info={CONTACT_INFO} isMobile={isMobile} />
             )}
           </SectionPanel>
         )}

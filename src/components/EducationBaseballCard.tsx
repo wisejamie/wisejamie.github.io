@@ -23,10 +23,24 @@ export function EducationBaseballCard({
   const H = Math.round(W * (3.5 / 2.5));
   const BORDER = Math.round(W * 0.057);
 
+  const TOPPS = {
+    woodLight: "#d4a24a",
+    woodMid: "#b9822d",
+    woodDark: "#7b4f18",
+    cream: "#eadfc2",
+    creamDark: "#c8b98e",
+    black: "#11100b",
+    photoBorder: "#f0e2b5",
+    red: "#d71920",
+    redDark: "#9d1018",
+    yellow: "#f0c83a",
+    dateInk: "#5d5339",
+  };
+
   const woodGrain = [
-    "repeating-linear-gradient(89deg, transparent 0px, rgba(0,0,0,0.055) 1px, transparent 2px, transparent 5px, rgba(255,255,255,0.045) 6px, transparent 7px, transparent 12px)",
-    "repeating-linear-gradient(91.5deg, rgba(0,0,0,0.04) 0px, transparent 3px, rgba(0,0,0,0.025) 6px, transparent 9px)",
-    "linear-gradient(177deg, #d8a838 0%, #a57018 14%, #cc9220 28%, #9c6a16 42%, #b88420 56%, #d0a02c 70%, #a87620 84%, #c49030 100%)",
+    "repeating-linear-gradient(90deg, rgba(70,38,10,0.16) 0px, transparent 1px, transparent 5px, rgba(255,230,150,0.12) 7px, transparent 10px)",
+    "repeating-linear-gradient(88deg, transparent 0px, rgba(0,0,0,0.08) 2px, transparent 4px, transparent 13px)",
+    `linear-gradient(180deg, ${TOPPS.woodLight} 0%, ${TOPPS.woodMid} 18%, #c69238 35%, ${TOPPS.woodDark} 50%, #b77d29 67%, ${TOPPS.woodLight} 100%)`,
   ].join(", ");
 
   const badgeSize = Math.round(W * 0.23);
@@ -220,7 +234,7 @@ export function EducationBaseballCard({
           {/* Nameplate */}
           <div
             style={{
-              background: "linear-gradient(to bottom, #ED1B2F, #8e0d1a)",
+              background: `linear-gradient(180deg, ${TOPPS.red} 0%, ${TOPPS.redDark} 100%)`,
               padding: `${Math.round(W * 0.033)}px ${Math.round(W * 0.042)}px ${Math.round(W * 0.025)}px`,
               position: "relative",
               flexShrink: 0,
@@ -242,7 +256,7 @@ export function EducationBaseballCard({
                 fontFamily: '"Arial Black", Impact, fantasy',
                 fontSize: Math.round(W * 0.075),
                 fontWeight: 900,
-                color: "#ffffff",
+                color: "#fff4dc",
                 letterSpacing: "0.04em",
                 lineHeight: 1,
                 textShadow: "0 1px 4px rgba(0,0,0,0.55)",
@@ -255,7 +269,7 @@ export function EducationBaseballCard({
               style={{
                 fontFamily: '"Arial Black", Impact, fantasy',
                 fontSize: Math.round(W * 0.055),
-                color: "#f0ca40",
+                color: "TOPPS.Yellow",
                 letterSpacing: "0.06em",
                 marginTop: Math.round(W * 0.012),
                 opacity: 0.95,
@@ -268,7 +282,7 @@ export function EducationBaseballCard({
           {/* Footer with dates */}
           <div
             style={{
-              background: "#e6deca",
+              background: `linear-gradient(180deg, #efe3c3 0%, #d7c89f 100%)`,
               padding: `${Math.round(W * 0.012)}px 6px`,
               textAlign: "center",
               borderTop: "0.5px solid rgba(0,0,0,0.1)",
@@ -279,7 +293,7 @@ export function EducationBaseballCard({
               style={{
                 fontFamily: '"Arial Black", Impact, fantasy',
                 fontSize: Math.round(W * 0.045),
-                color: "#8a7a58",
+                color: "TOPPS.DATE_INK",
                 letterSpacing: "0.18em",
               }}
             >
