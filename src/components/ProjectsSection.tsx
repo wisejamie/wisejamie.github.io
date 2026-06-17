@@ -1,4 +1,5 @@
 import { PROJECTS } from "../data/portfolio";
+import { LinkChips } from "./LinkChips";
 
 interface ProjectsSectionProps {
   isMobile?: boolean;
@@ -17,11 +18,26 @@ export function ProjectsSection({ isMobile = false }: ProjectsSectionProps) {
               fontWeight: 700,
               color: "#f0ece2",
               letterSpacing: "0.01em",
-              marginBottom: 12,
+              marginBottom: project.subtitle ? 4 : 12,
             }}
           >
             {project.name}
           </div>
+
+          {/* Optional subtitle / context */}
+          {project.subtitle && (
+            <div
+              style={{
+                fontFamily: "monospace",
+                fontSize: 11,
+                color: "#4a6050",
+                letterSpacing: "0.07em",
+                marginBottom: 12,
+              }}
+            >
+              {project.subtitle}
+            </div>
+          )}
 
           {/* Tech stack chips */}
           <div
@@ -87,6 +103,11 @@ export function ProjectsSection({ isMobile = false }: ProjectsSectionProps) {
               </li>
             ))}
           </ul>
+
+          {/* Link chips */}
+          {project.links && project.links.length > 0 && (
+            <LinkChips links={project.links} style={{ marginTop: 14 }} />
+          )}
 
           {i < PROJECTS.length - 1 && (
             <div
