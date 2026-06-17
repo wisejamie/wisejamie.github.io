@@ -1,4 +1,6 @@
 import { EXPERIENCE_ROLES } from "../data/portfolio";
+import type { Publication } from "../data/portfolio";
+import { LinkChips } from "./LinkChips";
 
 interface ExperienceSectionProps {
   isMobile?: boolean;
@@ -116,6 +118,16 @@ export function ExperienceSection({ isMobile = false }: ExperienceSectionProps) 
             ))}
           </ul>
 
+          {/* Publication callout */}
+          {role.publication && (
+            <PublicationCard pub={role.publication} isMobile={isMobile} />
+          )}
+
+          {/* Link chips */}
+          {role.links && role.links.length > 0 && (
+            <LinkChips links={role.links} style={{ marginTop: 16 }} />
+          )}
+
           {i < EXPERIENCE_ROLES.length - 1 && (
             <div
               style={{
@@ -127,6 +139,104 @@ export function ExperienceSection({ isMobile = false }: ExperienceSectionProps) 
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+function PublicationCard({
+  pub,
+  isMobile,
+}: {
+  pub: Publication;
+  isMobile: boolean;
+}) {
+  return (
+    <div
+      style={{
+        marginTop: 20,
+        padding: isMobile ? "14px 16px" : "16px 20px",
+        background: "rgba(16, 28, 48, 0.55)",
+        border: "1px solid rgba(122,159,212,0.2)",
+        borderTop: "2px solid rgba(122,159,212,0.48)",
+        borderRadius: 4,
+      }}
+    >
+      {/* Label row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: 9,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontSize: 8,
+            color: "rgba(122,159,212,0.65)",
+            letterSpacing: "0.22em",
+          }}
+        >
+          PUBLISHED RESEARCH
+        </span>
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontSize: 8,
+            color: "rgba(122,159,212,0.35)",
+            letterSpacing: "0.1em",
+          }}
+        >
+          · {pub.journal.toUpperCase()}
+        </span>
+      </div>
+
+      {/* Title */}
+      <div
+        style={{
+          fontFamily: "monospace",
+          fontSize: isMobile ? 13 : 15,
+          fontWeight: 700,
+          color: "#dde8f4",
+          letterSpacing: "0.01em",
+          marginBottom: 5,
+          lineHeight: 1.3,
+        }}
+      >
+        {pub.title}
+      </div>
+
+      {/* Authors */}
+      <div
+        style={{
+          fontFamily: "monospace",
+          fontSize: 11,
+          color: "rgba(122,159,212,0.5)",
+          letterSpacing: "0.04em",
+          marginBottom: 10,
+        }}
+      >
+        {pub.authors}
+      </div>
+
+      {/* Description */}
+      <div
+        style={{
+          fontFamily: "monospace",
+          fontSize: isMobile ? 12 : 13,
+          color: "#b4bccc",
+          lineHeight: 1.7,
+          marginBottom: 14,
+        }}
+      >
+        {pub.description}
+      </div>
+
+      {/* Link */}
+      <LinkChips
+        links={[{ label: "Read the paper", url: pub.url, kind: "paper" }]}
+      />
     </div>
   );
 }
