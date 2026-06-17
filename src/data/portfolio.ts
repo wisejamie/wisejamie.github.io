@@ -68,12 +68,35 @@ export const ABOUT_INFO: AboutInfo = {
   ],
 };
 
+export interface ProjectLink {
+  label: string;
+  url: string;
+  kind:
+    | "github"
+    | "demo"
+    | "paper"
+    | "devpost"
+    | "website"
+    | "publication"
+    | "other";
+}
+
+export interface Publication {
+  title: string;
+  journal: string;
+  authors: string;
+  description: string;
+  url: string;
+}
+
 export interface ExperienceRole {
   company: string;
   role: string;
   dates: string;
   location: string;
   bullets: string[];
+  links?: ProjectLink[];
+  publication?: Publication;
 }
 
 export const EXPERIENCE_ROLES: ExperienceRole[] = [
@@ -84,9 +107,17 @@ export const EXPERIENCE_ROLES: ExperienceRole[] = [
     location: "Montreal, Quebec",
     bullets: [
       "Collaborated with Professor Thomas Shultz to investigate GPT-4's discourse comprehension capabilities, turning open-ended research questions into testable tasks with clear prompts, controls, and evaluation criteria.",
-      "Designed and implemented a full-stack AI-powered learning platform that leverages GPT's demonstrated capabilities to aid human comprehension, using Python (FastAPI), PostgreSQL, and React.",
       "Co-authored a peer-reviewed paper in Royal Society Open Science by synthesizing related work, analyzing experimental results, and communicating technical findings clearly and rigorously for publication.",
+      "Designed and implemented full-stack AI tutoring prototypes that used GPT-powered document parsing, section-aware explanations, guided questions, and interactive study workflows to support academic reading comprehension. (See the PAIT project in the Projects section for more details.)",
     ],
+    publication: {
+      title: "Text understanding in GPT-4 versus humans",
+      journal: "Royal Society Open Science",
+      authors: "Thomas R. Shultz, Jamie M. Wise, Ardavan Salehi Nobandegani",
+      description:
+        "Co-authored a study comparing GPT-4 and human performance on discourse comprehension tasks, examining inference, generalization, and text understanding.",
+      url: "https://royalsocietypublishing.org/rsos/article/12/2/241313/92871/Text-understanding-in-GPT-4-versus-humansText",
+    },
   },
   {
     company: "SueApp",
@@ -98,18 +129,28 @@ export const EXPERIENCE_ROLES: ExperienceRole[] = [
       "Collaborated with a 4-person engineering team using Agile, Jira, and Git workflows to ensure smooth coordination and on-time delivery.",
       "Authored detailed onboarding documentation outlining Git practices, component structure, and local setup to streamline future developer onboarding.",
     ],
+    links: [
+      {
+        label: "Check out the site I worked on!",
+        url: "https://www.sue-app.com/",
+        kind: "website",
+      },
+    ],
   },
 ];
 
 export interface Project {
   name: string;
+  subtitle?: string;
   stack: string[];
   bullets: string[];
+  links?: ProjectLink[];
 }
 
 export const PROJECTS: Project[] = [
   {
     name: "Clinical Converter",
+    subtitle: "HL7 v2 to FHIR R4 healthcare interoperability tool",
     stack: [
       "Python",
       "FastAPI",
@@ -119,13 +160,26 @@ export const PROJECTS: Project[] = [
       "CLI tooling",
     ],
     bullets: [
-      "Built a clinical data interoperability tool that converts legacy HL7 v2 hospital EMR messages into standardized FHIR R4 JSON outputs.",
-      "Implemented a FastAPI (Python) backend to ingest, validate, and transform messages end-to-end; added a CLI and synthetic HL7 generators for testing.",
-      "Developed an interactive Next.js web demo (via Vercel) with deterministic and LLM-generated summaries for quick human-readable views of the converted records.",
+      "Built a full-stack healthcare interoperability tool that converts legacy HL7 v2 hospital EMR messages into structured FHIR R4 JSON Bundles and human-readable clinical summaries.",
+      "Implemented a FastAPI backend to ingest, validate, and transform clinical messages end-to-end, mapping patient demographics, encounters, observations, related persons, and allergies into standardized FHIR resources.",
+      "Added deterministic fact-based summaries, optional GPT-generated narrative summaries, synthetic HL7 generation, CLI tooling, automated tests, and a deployed Next.js web demo.",
+    ],
+    links: [
+      {
+        label: "GitHub",
+        url: "https://github.com/wisejamie/clinical-converter",
+        kind: "github",
+      },
+      {
+        label: "Live Demo",
+        url: "https://clinical-converter-frontend.vercel.app/",
+        kind: "demo",
+      },
     ],
   },
   {
-    name: "Flash (AI Flashcard Generator)",
+    name: "Flash",
+    subtitle: "AI flashcard generator for lecture material",
     stack: [
       "Python",
       "JavaScript",
@@ -136,52 +190,143 @@ export const PROJECTS: Project[] = [
       "OpenAI API",
     ],
     bullets: [
-      "Built a flashcard generator that converts unstructured lecture text and PDFs into structured flashcards and summaries.",
-      "Implemented a FastAPI service integrating the OpenAI API with custom prompting and an iterative concept-enumeration pipeline to extract key ideas while filtering noise.",
-      "Designed a fuzzy alignment algorithm to match generated content back to the source text, reducing LLM token usage by ~88% while preserving accuracy, improving scalability and cost.",
+      "Built a full-stack AI study app that converts lecture PDFs or pasted text into organized flashcard sets, summaries, and quiz material.",
+      "Designed an LLM generation pipeline for concept extraction, flashcard creation, content filtering, and deduplication from PDFs or pasted text.",
+      "Created an interactive frontend for managing study sets, editing cards, reviewing material, taking quizzes, tracking progress, and importing/exporting data.",
+    ],
+    links: [
+      {
+        label: "GitHub",
+        url: "https://github.com/wisejamie/flash",
+        kind: "github",
+      },
+      {
+        label: "Live Demo",
+        url: "https://flash-ij2tis5aw-wisejamies-projects.vercel.app/",
+        kind: "demo",
+      },
+    ],
+  },
+  {
+    name: "PAIT (2025)",
+    subtitle:
+      "Personal AI Tutor for complex academic papers (while working with Professor Shultz at McGill)",
+    stack: ["FastAPI", "React", "Vite", "Python", "OpenAI API"],
+    bullets: [
+      "Built a full-stack AI learning app that turns uploaded PDFs and text documents into interactive study experiences with section navigation, summaries, quizzes, and tutor-style Q&A.",
+      "Developed a document-processing pipeline to identify paper structure and map AI-generated section anchors back to the original text using fuzzy matching. The fuzzy matching algorithm reduces LLM token usage by ~88% while preserving accuracy.",
+      "Implemented interactive learning flows including text simplification, multiple-choice quiz sessions, and open-ended tutor-style comprehension checks.",
+    ],
+  },
+  {
+    name: "Contwext",
+    subtitle: "McGill CodeJam 12 · Social/Community Wellness Award",
+    stack: [
+      "Hackathon",
+      "JavaScript",
+      "Chrome Extension",
+      "Django",
+      "Python",
+      "Hugging Face",
+    ],
+    bullets: [
+      "Won the Social/Community Wellness Award at McGill CodeJam 12 (with a $500 prize) for building a browser tool to combat misinformation online.",
+      "Built a Chrome extension that scraped tweets from a user’s timeline and surfaced relevant news articles to add context to posts they interacted with.",
+      "Created with two close friends during our first semester at McGill.",
+    ],
+    links: [
+      {
+        label: "View on Devpost",
+        url: "https://devpost.com/software/contwext",
+        kind: "devpost",
+      },
     ],
   },
 ];
 
 export interface TripEntry {
+  id: string;
   location: string;
   tagline?: string;
   description: string;
+  date?: string;
+  tags?: string[];
+  // Map pin position on a 1000×500 SVG viewBox (Plate Carrée projection)
+  // x = (lon + 180) / 360 * 1000,  y = (90 − lat) / 180 * 500
+  mapX: number;
+  mapY: number;
+  // Placeholder photo labels — swap strings for image URLs when ready
+  photos?: string[];
 }
 
 export const TRIPS: TripEntry[] = [
   {
-    location: "Sydney, Australia",
-    tagline: "Exchange semester at UNSW · Jan – May 2025",
-    description:
-      "Surf, hikes, friends, and probably the happiest I've ever been.",
+    id: "australia",
+    location: "Australia",
+    tagline:
+      "Sydney · Great Ocean Road · Melbourne · Byron Bay · Great Barrier Reef",
+    description: "Wow, it is hot down there.",
+    date: "Jan – May 2025",
+    tags: ["exchange", "ocean", "city"],
+    mapX: 919,
+    mapY: 344,
+    photos: ["Bondi Beach", "Great Ocean Road", "Great Barrier Reef"],
   },
   {
-    location: "New Zealand South Island",
-    tagline: "Road trip",
-    description:
-      "Mountains, road trips, and some of the best nature I've seen.",
+    id: "newzealand",
+    location: "New Zealand (South Island)",
+    tagline: "Queenstown · Te Anau · Wanaka · Isthmus Peak · Milford Sound",
+    description: "Hands down the best nature I've ever seen.",
+    date: "Feb 2025",
+    tags: ["road trip", "mountains", "nature"],
+    mapX: 971,
+    mapY: 372,
+    photos: ["Milford Sound", "Isthmus Peak", "Wanaka"],
   },
   {
+    id: "seasia",
     location: "Vietnam & Thailand",
-    tagline: "Backpacking",
-    description:
-      "Backpacking, food, history, and a lot of figuring it out as I went.",
+    tagline: "Hanoi · Ninh Binh · Ha Giang · Chiang Mai · Koh Samui · Bangkok",
+    description: "Living the dream in Southeast Asia.",
+    date: "May 2025",
+    tags: ["backpacking", "food", "history"],
+    mapX: 783,
+    mapY: 208,
+    photos: ["Ha Giang Loop", "Chiang Mai", "Koh Samui"],
   },
   {
+    id: "banff",
     location: "Banff, Alberta",
     tagline: "With friends",
-    description: "[Placeholder — add a line or two about this trip.]",
+    description: "Fooling around in the Canadian Rockies.",
+    date: "Aug 2025",
+    tags: ["mountains", "lakes", "hiking"],
+    mapX: 181,
+    mapY: 108,
+    photos: ["Lake Louise", "Moraine Lake", "Icefields Pkwy"],
   },
   {
-    location: "Montreal / McGill Ski Club",
+    id: "montreal",
+    location: "Montreal / Ski Trips",
     tagline: "Last semester",
-    description: "Skiing at McGill this last semester.",
+    description: "Got pretty alright at skiing.",
+    date: "Jan – Feb 2026",
+    tags: ["city", "university", "skiing"],
+    mapX: 296,
+    mapY: 122,
+    photos: ["Old Montreal", "McGill Campus", "Mont Tremblant"],
   },
   {
+    id: "california",
     location: "California Road Trip",
     tagline: "Santa Cruz · Big Sur · Sequoia · Yosemite",
-    description: "With friends. Camping, hiking, surfing.",
+    description:
+      "Driving, rucking, and surfing through California coast, national parks, and backcountry.",
+    date: "May 2026",
+    tags: ["road trip", "camping", "surfing"],
+    mapX: 168,
+    mapY: 147,
+    photos: ["Big Sur Coast", "Yosemite Valley", "Sequoia Grove"],
   },
 ];
 
@@ -253,7 +398,7 @@ export const EDUCATION_ENTRIES: EducationEntry[] = [
       "Studied abroad for a semester at UNSW in Sydney, Australia.",
       "Completed courses in Artificial Intelligence and Web Frontend Development with high distinction.",
       "Traveled to six different countries: Australia, New Zealand, Indonesia, Singapore, Vietnam, and Thailand.",
-      "Had a wicked pissah (really great) time down undah (in Australia)!",
+      "Had an absolute ripper of a time down undah (really great time in Australia)!",
     ],
     coursework: [
       "Artificial Intelligence",
