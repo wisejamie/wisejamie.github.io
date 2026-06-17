@@ -76,8 +76,9 @@ export function ContactCard({ info, isMobile = false }: ContactCardProps) {
                 aria-label={`${label}: ${display}`}
                 style={{
                   fontFamily: "monospace",
-                  fontSize: isMobile ? 16 : 18,
+                  fontSize: isMobile ? 13 : 18,
                   color: "#c8c4b8",
+                  wordBreak: "break-all",
                   textDecoration: "none",
                   letterSpacing: "0.02em",
                   transition: "color 0.15s",

@@ -38,7 +38,7 @@ function SectionHeader({ children }: { children: ReactNode }) {
   );
 }
 
-function BulletList({ items }: { items: string[] }) {
+function BulletList({ items, isMobile = false }: { items: string[]; isMobile?: boolean }) {
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
       {items.map((item, i) => (
@@ -49,7 +49,7 @@ function BulletList({ items }: { items: string[] }) {
             gap: 8,
             marginBottom: 6,
             fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize: 14,
+            fontSize: isMobile ? 12 : 14,
             color: "#1a1408",
             lineHeight: 1.5,
           }}
@@ -296,7 +296,7 @@ export function EducationCardBack({
             }}
           >
             <SectionHeader>HIGHLIGHTS</SectionHeader>
-            <BulletList items={entry.highlights ?? ["Highlight placeholder"]} />
+            <BulletList items={entry.highlights ?? ["Highlight placeholder"]} isMobile={isMobile} />
             {entry.footnotes?.length ? (
               <div
                 style={{
@@ -317,6 +317,7 @@ export function EducationCardBack({
             <SectionHeader>RELEVANT COURSEWORK</SectionHeader>
             <BulletList
               items={entry.coursework ?? ["Coursework placeholder"]}
+              isMobile={isMobile}
             />
           </div>
         </div>

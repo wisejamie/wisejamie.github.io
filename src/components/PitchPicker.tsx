@@ -5,42 +5,45 @@ interface PitchPickerProps {
   onSelect: (pitch: PitchType) => void;
   selectedId: string | null;
   disabled: boolean;
+  isMobile?: boolean;
 }
 
 export function PitchPicker({
   onSelect,
   selectedId,
   disabled,
+  isMobile = false,
 }: PitchPickerProps) {
   return (
     <div
       style={{
         position: "absolute",
-        bottom: 24,
+        bottom: isMobile ? 70 : 24,
         left: 0,
         right: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: 7,
-        padding: "0 16px",
+        padding: isMobile ? "0 12px" : "0 16px",
       }}
     >
-      {/* <div style={{
-        fontFamily: 'monospace',
-        fontSize: 8,
-        color: '#2a3a2e',
-        letterSpacing: '0.22em',
-      }}>
-        PITCH LAB
-      </div> */}
       <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 10,
-          flexWrap: "wrap",
-        }}
+        style={
+          isMobile
+            ? {
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 6,
+                width: "100%",
+              }
+            : {
+                display: "flex",
+                justifyContent: "center",
+                gap: 10,
+                flexWrap: "wrap",
+              }
+        }
       >
         {PITCHES.map((pitch) => {
           const isSelected = pitch.id === selectedId;
@@ -57,31 +60,35 @@ export function PitchPicker({
                 color: "#e0ddd5",
                 cursor: disabled ? "not-allowed" : "pointer",
                 fontFamily: "monospace",
-                fontSize: 11,
+                fontSize: isMobile ? 9 : 11,
                 opacity: disabled && !isSelected ? 0.45 : 1,
-                padding: "8px 12px",
+                padding: isMobile ? "6px 6px" : "8px 12px",
                 textAlign: "left",
-                minWidth: 110,
+                minWidth: isMobile ? 0 : 110,
               }}
             >
               <div
                 style={{
                   color: pitch.colorLabel,
                   fontWeight: 700,
-                  marginBottom: 2,
-                  fontSize: 12,
+                  marginBottom: isMobile ? 1 : 2,
+                  fontSize: isMobile ? 10 : 12,
+                  whiteSpace: "normal",
+                  lineHeight: 1.2,
                 }}
               >
                 {pitch.name}
               </div>
-              <div style={{ color: "#555", fontSize: 10, marginBottom: 4 }}>
-                {pitch.section.toUpperCase()}
-              </div>
+              {!isMobile && (
+                <div style={{ color: "#555", fontSize: 10, marginBottom: 4 }}>
+                  {pitch.section.toUpperCase()}
+                </div>
+              )}
               <div
-                style={{ display: "flex", gap: 8, fontSize: 10, color: "#777" }}
+                style={{ display: "flex", gap: 6, fontSize: 9, color: "#777", flexWrap: "wrap" }}
               >
                 <span>{pitch.velocityMph} mph</span>
-                <span>{(pitch.spinRpm / 1000).toFixed(1)}k rpm</span>
+                {!isMobile && <span>{(pitch.spinRpm / 1000).toFixed(1)}k rpm</span>}
               </div>
             </button>
           );

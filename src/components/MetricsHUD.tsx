@@ -14,7 +14,7 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-export function MetricsHUD({ pitch, progress, onHoverChange }: MetricsHUDProps) {
+export function MetricsHUD({ pitch, progress, onHoverChange, isMobile }: MetricsHUDProps & { isMobile?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -54,16 +54,16 @@ export function MetricsHUD({ pitch, progress, onHoverChange }: MetricsHUDProps) 
       onMouseLeave={handleMouseLeave}
       style={{
         position: "absolute",
-        top: 16,
-        right: 16,
+        top: isMobile ? 50 : 16,
+        right: isMobile ? 8 : 16,
         fontFamily: "monospace",
-        fontSize: 12,
+        fontSize: isMobile ? 11 : 12,
         color: "#e0ddd5",
         background: "rgba(0,0,0,0.55)",
         border: "1px solid rgba(255,255,255,0.15)",
         borderRadius: 4,
-        padding: "10px 14px",
-        minWidth: 170,
+        padding: isMobile ? "7px 10px" : "10px 14px",
+        minWidth: isMobile ? 140 : 170,
         lineHeight: 1.9,
         cursor: "default",
       }}

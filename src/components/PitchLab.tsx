@@ -367,6 +367,7 @@ export function PitchLab() {
           progress={frozen ? 1 : throwProgress}
           frozen={frozen}
           onHoverChange={setHudHovered}
+          isMobile={isMobile}
         />
       )}
 
@@ -439,13 +440,14 @@ export function PitchLab() {
         onSelect={handlePickerSelect}
         selectedId={selectedPitch?.id ?? null}
         disabled={throwing}
+        isMobile={isMobile}
       />
 
       {/* Handedness toggle — bottom left, mirrors speed control layout */}
       {!panelOpen && <div
         style={{
           position: 'absolute',
-          bottom: 24,
+          bottom: isMobile ? 14 : 24,
           left: 16,
           zIndex: 10,
           display: 'flex',
@@ -483,7 +485,7 @@ export function PitchLab() {
       {!panelOpen && <div
         style={{
           position: 'absolute',
-          bottom: 24,
+          bottom: isMobile ? 14 : 24,
           right: 16,
           zIndex: 10,
           display: 'flex',

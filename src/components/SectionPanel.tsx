@@ -179,23 +179,25 @@ export function SectionPanel({
           </div>
         )}
 
-        {/* Keyboard hints */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: isMobile ? 16 : 32,
-            flexWrap: "wrap",
-            fontFamily: "monospace",
-            fontSize: 11,
-            color: "#638971",
-            letterSpacing: "0.13em",
-          }}
-        >
-          <span>← → NAVIGATE SECTIONS</span>
-          <span>·</span>
-          <span>ESC TO CLOSE</span>
-        </div>
+        {/* Keyboard hints — desktop only */}
+        {!isMobile && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 32,
+              flexWrap: "wrap",
+              fontFamily: "monospace",
+              fontSize: 11,
+              color: "#638971",
+              letterSpacing: "0.13em",
+            }}
+          >
+            <span>← → NAVIGATE SECTIONS</span>
+            <span>·</span>
+            <span>ESC TO CLOSE</span>
+          </div>
+        )}
       </div>
     </motion.div>
   );
