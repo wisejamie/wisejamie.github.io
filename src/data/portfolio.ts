@@ -60,10 +60,10 @@ export const ABOUT_INFO: AboutInfo = {
       label: "STATUS",
       value: "Just moved back home; looking for opportunities to work!",
     },
-    {
-      label: "INTERESTS",
-      value: "Baseball (obviously) · Placeholder · Placeholder",
-    },
+    // {
+    //   label: "INTERESTS",
+    //   value: "Baseball (obviously) · Placeholder · Placeholder",
+    // },
     // { label: "FUN FACT", value: "Think of something good." },
   ],
 };
