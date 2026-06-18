@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { SectionId } from "../data/pitches";
 import { PITCH_FOR_SECTION } from "../data/pitches";
 import { SECTIONS, SECTION_ORDER } from "../data/sections";
@@ -70,6 +71,8 @@ export function SectionNav({
     );
   }
 
+  const [hoveredId, setHoveredId] = useState<SectionId | null>(null);
+
   return (
     <nav
       style={{
@@ -82,11 +85,11 @@ export function SectionNav({
         flexDirection: "column",
         justifyContent: "center",
         gap: 2,
-        padding: "0 20px 80px 20px",
+        padding: "0 20px 80px 0",
         zIndex: 5,
         pointerEvents: "none",
         background:
-          "linear-gradient(to right, rgba(10,18,12,0.78) 0%, transparent 100%)",
+          "linear-gradient(to right, rgba(10,18,12,0.82) 0%, transparent 100%)",
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -94,22 +97,52 @@ export function SectionNav({
         const section = SECTIONS[sectionId];
         const pitch = PITCH_FOR_SECTION[sectionId];
         const isActive = activeSectionId === sectionId;
+        const isHovered = hoveredId === sectionId && !disabled;
         const isThrowing = isActive && simState === "throwing";
+
+        const barColor = isActive
+          ? "#f5a623"
+          : isHovered
+            ? "rgba(245,166,35,0.45)"
+            : "rgba(245,166,35,0.14)";
+
+        const numColor = isActive
+          ? "#f5a623"
+          : isHovered
+            ? "#8aaa90"
+            : "#4a6050";
+
+        const labelColor = isActive
+          ? "#f0ece2"
+          : isHovered
+            ? "#b0cabb"
+            : "#7a9a82";
+
+        const pitchColor = isThrowing
+          ? "rgba(245,166,35,0.75)"
+          : isActive
+            ? "rgba(245,166,35,0.45)"
+            : isHovered
+              ? "#4a6050"
+              : "#304038";
 
         return (
           <button
             key={sectionId}
             onClick={() => !disabled && onSelect(sectionId)}
+            onMouseEnter={() => setHoveredId(sectionId)}
+            onMouseLeave={() => setHoveredId(null)}
             disabled={disabled}
             style={{
               pointerEvents: disabled ? "none" : "auto",
-              background: "none",
+              background: isHovered && !isActive ? "rgba(245,166,35,0.04)" : "none",
               border: "none",
+              borderLeft: `2px solid ${barColor}`,
               textAlign: "left",
               cursor: disabled ? "default" : "pointer",
-              padding: "14px 0",
+              padding: "14px 0 14px 18px",
               opacity: disabled && !isActive ? 0.3 : 1,
-              transition: "opacity 0.2s",
+              transition: "opacity 0.2s, background 0.15s, border-color 0.15s",
             }}
           >
             <div style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
@@ -117,10 +150,10 @@ export function SectionNav({
                 style={{
                   fontFamily: "monospace",
                   fontSize: 10,
-                  color: isActive ? "#f5a623" : "#2e3d32",
+                  color: numColor,
                   letterSpacing: "0.12em",
                   minWidth: 14,
-                  transition: "color 0.2s",
+                  transition: "color 0.15s",
                 }}
               >
                 {String(i + 1).padStart(2, "0")}
@@ -130,9 +163,9 @@ export function SectionNav({
                   fontFamily: "monospace",
                   fontSize: 18,
                   fontWeight: isActive ? 600 : 400,
-                  color: isActive ? "#f0ece2" : "#4a6050",
+                  color: labelColor,
                   letterSpacing: "0.03em",
-                  transition: "color 0.2s",
+                  transition: "color 0.15s",
                 }}
               >
                 {section.label}
@@ -144,13 +177,9 @@ export function SectionNav({
                 fontSize: 12,
                 fontFamily: "monospace",
                 letterSpacing: "0.07em",
-                color: isThrowing
-                  ? "rgba(245,166,35,0.75)"
-                  : isActive
-                    ? "rgba(245,166,35,0.45)"
-                    : "#243028",
+                color: pitchColor,
                 marginTop: 1,
-                transition: "color 0.2s",
+                transition: "color 0.15s",
               }}
             >
               {isThrowing ? "▸ THROWING" : pitch.name.toUpperCase()}

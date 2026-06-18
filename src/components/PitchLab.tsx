@@ -257,6 +257,37 @@ export function PitchLab() {
         pointerEvents: 'none',
       }} />
 
+      {/* Top-left wordmark */}
+      {!isMobile && (
+        <div style={{
+          position: 'absolute',
+          top: 16,
+          left: 20,
+          zIndex: 6,
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}>
+          <div style={{
+            fontFamily: 'monospace',
+            fontSize: 15,
+            fontWeight: 700,
+            color: '#8aaa92',
+            letterSpacing: '0.18em',
+          }}>
+            JAMIE WISE
+          </div>
+          <div style={{
+            fontFamily: 'monospace',
+            fontSize: 9,
+            color: '#3a5040',
+            letterSpacing: '0.22em',
+            marginTop: 3,
+          }}>
+            PORTFOLIO · 2026
+          </div>
+        </div>
+      )}
+
       {/* Static scene: dirt, plate, foul lines, mound marker */}
       <PlateScene svgWidth={dims.w} svgHeight={dims.h} handedness={pitcherHandedness} />
 
