@@ -52,7 +52,7 @@ export interface AboutInfo {
 export const ABOUT_INFO: AboutInfo = {
   name: "Jamie Wise",
   title: "Software Engineer · Computer Science",
-  bio: "Hey, I’m Jamie. I recently graduated from McGill University with a degree in Computer Science.\nYou can find more about my work and experience in the other sections, but the quick version is that I enjoy building things: web apps, models, tools, (campfires), and projects that help me solve difficult problems. I also really like talking through those problems with other people.\n\nTied with problem solving, my favourite activity in the world is throwing.\nBaseballs, frisbees, tennis balls, footballs, whatever. I love going outside and getting active, with my friends or my dogs.\n\nI'm always open to connecting with like-minded people, so feel free to reach out if you want to chat about anything tech-related, or not.",
+  bio: "Hey, I’m Jamie. I recently graduated from McGill University with a degree in Computer Science.\n\nYou can find more about my work and experience in the other sections, but the quick version is that I enjoy building things: web apps, models, tools, (campfires), and projects that help me solve difficult problems. I also really like talking through those problems with other people.\n\nTied with problem solving, my favourite activity in the world is throwing.\nBaseballs, frisbees, tennis balls, footballs, whatever. I love going outside and getting active, with my friends or my dogs.\n\nI'm always open to connecting with like-minded people, so feel free to reach out if you want to chat about anything tech-related, or not.",
   imageUrl: "/images/about.jpg",
   facts: [
     { label: "BASED IN", value: "Toronto, Ontario" },
