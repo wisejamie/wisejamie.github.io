@@ -3,6 +3,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { TRIPS } from "../data/portfolio";
 import type { TripEntry } from "../data/portfolio";
 
+// Per-photo crop overrides — only add entries you want to adjust
+const PHOTO_POSITIONS: Record<string, string> = {
+  "/images/trips/Ski2.jpg":   "center 70%",  // shift down
+  "/images/trips/Cali1.JPG":  "center 8%",   // shift up
+  "/images/trips/Banff3.jpg": "center 45%",  // shift down slightly
+  "/images/trips/Asia1.JPEG": "center 65%",  // shift down
+  "/images/trips/Asia2.jpg":  "center 65%",  // shift down
+  "/images/trips/Asia3.JPG":  "center 65%",  // shift down
+};
+
 // Photo placeholder gradient palettes — keyed by trip id, visual-only
 const PALETTES: Record<string, [string, string][]> = {
   australia:  [["#0e2a4a","#1a5a8a"],["#0a2a18","#147a40"],["#2a1a08","#7a4a10"]],
@@ -62,7 +72,9 @@ export function TripsSection({ isMobile = false }: TripsSectionProps) {
 
   const goToPhoto = (delta: number) => {
     if (!openTrip) return;
-    setPhotoIdx((i) => (i + delta + (openTrip.photos ?? []).length) % (openTrip.photos ?? []).length);
+    const len = (openTrip.photos ?? []).length;
+    if (len === 0) return;
+    setPhotoIdx((i) => (i + delta + len) % len);
   };
 
   // Keyboard: ESC closes, arrows navigate trips (capture-phase so section-nav doesn't fire)
@@ -78,7 +90,7 @@ export function TripsSection({ isMobile = false }: TripsSectionProps) {
   }, [openTripId, openIdx]);
 
   return (
-    <div style={{ width: "100%", position: "relative" }}>
+    <div style={{ width: "100%", position: "relative", minHeight: isMobile ? 440 : 540 }}>
 
       {/* ── Map + list ──────────────────────────────────────────────────── */}
       <div
@@ -175,6 +187,9 @@ function TripPopup({
   onPrevPhoto: () => void;
   onSetPhoto: (i: number) => void;
 }) {
+  const photos = trip.photos ?? [];
+  const photoSrc = photos[photoIdx] ?? null;
+  const isImage = !!photoSrc && photoSrc.startsWith("/");
   const [from, to] = PALETTES[trip.id]?.[photoIdx] ?? ["#0a1210", "#1a3020"];
 
   return (
@@ -257,68 +272,79 @@ function TripPopup({
               justifyContent: "center",
             }}
           >
-            {/* Hatching texture */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage:
-                  "repeating-linear-gradient(45deg, rgba(255,255,255,0.014) 0px, rgba(255,255,255,0.014) 1px, transparent 1px, transparent 9px)",
-                pointerEvents: "none",
-              }}
-            />
-            <div
-              style={{
-                textAlign: "center",
-                zIndex: 1,
-              }}
-            >
-              <div
+            {isImage ? (
+              <img
+                src={photoSrc}
+                alt=""
                 style={{
-                  fontFamily: "monospace",
-                  fontSize: isMobile ? 10 : 12,
-                  color: "rgba(200,196,180,0.28)",
-                  letterSpacing: "0.22em",
-                  marginBottom: 10,
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: PHOTO_POSITIONS[photoSrc] ?? "center",
+                  display: "block",
                 }}
-              >
-                PHOTO {String(photoIdx + 1).padStart(2, "0")}
-              </div>
-              <div
-                style={{
-                  fontFamily: "monospace",
-                  fontSize: isMobile ? 16 : 22,
-                  color: "rgba(200,196,180,0.45)",
-                  letterSpacing: "0.06em",
-                }}
-              >
-                {(trip.photos ?? [])[photoIdx]}
-              </div>
-            </div>
+              />
+            ) : (
+              <>
+                {/* Hatching texture */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage:
+                      "repeating-linear-gradient(45deg, rgba(255,255,255,0.014) 0px, rgba(255,255,255,0.014) 1px, transparent 1px, transparent 9px)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <div style={{ textAlign: "center", zIndex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: isMobile ? 10 : 12,
+                      color: "rgba(200,196,180,0.28)",
+                      letterSpacing: "0.22em",
+                      marginBottom: 10,
+                    }}
+                  >
+                    PHOTOS COMING SOON
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: isMobile ? 14 : 18,
+                      color: "rgba(200,196,180,0.35)",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {trip.location}
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
 
-        {/* Photo arrow overlays */}
-        <button
-          onClick={onPrevPhoto}
-          aria-label="Previous photo"
-          style={{
-            ...photoArrowStyle,
-            left: 12,
-          }}
-        >
-          ‹
-        </button>
-        <button
-          onClick={onNextPhoto}
-          aria-label="Next photo"
-          style={{
-            ...photoArrowStyle,
-            right: 12,
-          }}
-        >
-          ›
-        </button>
+        {/* Photo arrow overlays — only shown when there are multiple photos */}
+        {photos.length > 1 && (
+          <>
+            <button
+              onClick={onPrevPhoto}
+              aria-label="Previous photo"
+              style={{ ...photoArrowStyle, left: 12 }}
+            >
+              ‹
+            </button>
+            <button
+              onClick={onNextPhoto}
+              aria-label="Next photo"
+              style={{ ...photoArrowStyle, right: 12 }}
+            >
+              ›
+            </button>
+          </>
+        )}
       </div>
 
       {/* ── Caption strip ─────────────────────────────────────────────── */}
@@ -379,9 +405,10 @@ function TripPopup({
           >
             {trip.date}
           </div>
-          {/* Photo dots */}
+          {/* Photo dots — only shown when there are multiple photos */}
+          {photos.length > 1 && (
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            {(trip.photos ?? []).map((_, i) => (
+            {photos.map((_, i) => (
               <button
                 key={i}
                 onClick={() => onSetPhoto(i)}
@@ -399,6 +426,7 @@ function TripPopup({
               />
             ))}
           </div>
+          )}
         </div>
       </div>
     </div>

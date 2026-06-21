@@ -270,7 +270,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["exchange", "ocean", "city"],
     mapX: 919,
     mapY: 344,
-    photos: ["Bondi Beach", "Great Ocean Road", "Great Barrier Reef"],
+    photos: ["/images/trips/Aus1.JPG", "/images/trips/Aus2.JPG", "/images/trips/Aus3.JPG"],
   },
   {
     id: "newzealand",
@@ -281,7 +281,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["road trip", "mountains", "nature"],
     mapX: 971,
     mapY: 372,
-    photos: ["Milford Sound", "Isthmus Peak", "Wanaka"],
+    photos: ["/images/trips/NZ1.JPG", "/images/trips/NZ2.JPG", "/images/trips/NZ3.JPG"],
   },
   {
     id: "seasia",
@@ -292,7 +292,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["backpacking", "food", "history"],
     mapX: 783,
     mapY: 208,
-    photos: ["Ha Giang Loop", "Chiang Mai", "Koh Samui"],
+    photos: ["/images/trips/Asia1.JPEG", "/images/trips/Asia2.jpg", "/images/trips/Asia3.JPG"],
   },
   {
     id: "banff",
@@ -303,7 +303,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["mountains", "lakes", "hiking"],
     mapX: 181,
     mapY: 108,
-    photos: ["Lake Louise", "Moraine Lake", "Icefields Pkwy"],
+    photos: ["/images/trips/Banff1.jpg", "/images/trips/Banff2.jpg", "/images/trips/Banff3.jpg"],
   },
   {
     id: "montreal",
@@ -314,7 +314,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["city", "university", "skiing"],
     mapX: 296,
     mapY: 122,
-    photos: ["Old Montreal", "McGill Campus", "Mont Tremblant"],
+    photos: ["/images/trips/Ski1.jpg", "/images/trips/Ski2.jpg", "/images/trips/Ski3.JPG"],
   },
   {
     id: "california",
@@ -326,7 +326,7 @@ export const TRIPS: TripEntry[] = [
     tags: ["road trip", "camping", "surfing"],
     mapX: 168,
     mapY: 147,
-    photos: ["Big Sur Coast", "Yosemite Valley", "Sequoia Grove"],
+    photos: ["/images/trips/Cali1.JPG", "/images/trips/Cali2.JPG", "/images/trips/Cali3.JPG"],
   },
 ];
 
