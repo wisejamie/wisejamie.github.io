@@ -28,16 +28,43 @@ export function SectionNav({
           left: 0,
           right: 0,
           display: "flex",
+          alignItems: "center",
           overflowX: "auto",
           gap: 6,
           padding: "10px 12px",
           background:
-            "linear-gradient(to bottom, rgba(14,26,18,0.92) 70%, transparent)",
+            "linear-gradient(to bottom, rgba(10,20,14,0.97) 75%, transparent)",
           zIndex: 5,
           scrollbarWidth: "none",
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        <div style={{ flexShrink: 0, marginRight: 6, lineHeight: 1.2 }}>
+          <div style={{
+            fontFamily: "monospace",
+            fontSize: 10,
+            fontWeight: 700,
+            color: "#7aaa8a",
+            letterSpacing: "0.16em",
+          }}>
+            JAMIE WISE
+          </div>
+          <div style={{
+            fontFamily: "monospace",
+            fontSize: 8,
+            color: "#3a5040",
+            letterSpacing: "0.18em",
+          }}>
+            PORTFOLIO
+          </div>
+        </div>
+        <div style={{
+          width: 1,
+          alignSelf: "stretch",
+          background: "rgba(255,255,255,0.1)",
+          marginRight: 6,
+          flexShrink: 0,
+        }} />
         {SECTION_ORDER.map((sectionId) => {
           const section = SECTIONS[sectionId];
           const isActive = activeSectionId === sectionId;
@@ -49,18 +76,19 @@ export function SectionNav({
               style={{
                 flexShrink: 0,
                 background: isActive
-                  ? "rgba(245,166,35,0.15)"
-                  : "rgba(0,0,0,0.55)",
-                border: `1px solid ${isActive ? "#f5a623" : "rgba(255,255,255,0.13)"}`,
-                borderRadius: 4,
-                color: isActive ? "#f5a623" : "#667a6e",
+                  ? "rgba(245,166,35,0.18)"
+                  : "rgba(255,255,255,0.06)",
+                border: `1px solid ${isActive ? "#f5a623" : "rgba(255,255,255,0.22)"}`,
+                borderRadius: 5,
+                color: isActive ? "#f5a623" : "#a8bfb0",
                 cursor: disabled ? "default" : "pointer",
                 fontFamily: "monospace",
-                fontSize: 10,
-                letterSpacing: "0.08em",
-                padding: "5px 10px",
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                letterSpacing: "0.06em",
+                padding: "8px 14px",
                 opacity: disabled && !isActive ? 0.35 : 1,
-                transition: "color 0.15s, border-color 0.15s",
+                transition: "color 0.15s, border-color 0.15s, background 0.15s",
               }}
             >
               {section.label.toUpperCase()}

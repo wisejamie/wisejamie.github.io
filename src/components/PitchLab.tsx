@@ -23,6 +23,7 @@ import { AboutSection } from './AboutSection';
 import { ExperienceSection } from './ExperienceSection';
 import { ProjectsSection } from './ProjectsSection';
 import { TripsSection } from './TripsSection';
+import { SectionHint } from './SectionHint';
 import { CONTACT_INFO } from '../data/portfolio';
 import { createPitchAttempt } from '../lib/variation';
 import type { Handedness } from '../lib/variation';
@@ -68,6 +69,12 @@ export function PitchLab() {
   const [pitcherHandedness, setPitcherHandedness] = useState<Handedness>('RHP');
   // Whether the current/last throw was triggered by the section nav (shows panel) or the pitch picker (doesn't)
   const [fromSection, setFromSection] = useState(false);
+
+  // Onboarding hint: show after first picker throw until user opens a section or dismisses
+  const [hasOpenedSection, setHasOpenedSection] = useState(false);
+  const [hasSeenHint, setHasSeenHint] = useState(
+    () => localStorage.getItem('pitchlab-hint-seen') === 'true'
+  );
 
   // Resize observer
   useEffect(() => {
@@ -137,8 +144,14 @@ export function PitchLab() {
 
   const handleSectionSelect = useCallback((sectionId: SectionId) => {
     setFromSection(true);
+    setHasOpenedSection(true);
     handleSelect(PITCH_FOR_SECTION[sectionId]);
   }, [handleSelect]);
+
+  const handleDismissHint = useCallback(() => {
+    localStorage.setItem('pitchlab-hint-seen', 'true');
+    setHasSeenHint(true);
+  }, []);
 
   const handlePickerSelect = useCallback((pitch: PitchType) => {
     setFromSection(false);
@@ -465,6 +478,18 @@ export function PitchLab() {
           CLEAR TARGET
         </button>
       )}
+
+      {/* Section nav onboarding hint */}
+      <AnimatePresence>
+        {frozen && !fromSection && !hasOpenedSection && !hasSeenHint && selectedPitch && (
+          <SectionHint
+            isMobile={isMobile}
+            sectionId={selectedPitch.section}
+            containerHeight={dims.h}
+            onDismiss={handleDismissHint}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Pitch picker */}
       <PitchPicker
