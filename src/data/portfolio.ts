@@ -108,7 +108,7 @@ export const EXPERIENCE_ROLES: ExperienceRole[] = [
     bullets: [
       "Collaborated with Professor Thomas Shultz to investigate GPT-4's discourse comprehension capabilities, turning open-ended research questions into testable tasks with clear prompts, controls, and evaluation criteria.",
       "Co-authored a peer-reviewed paper in Royal Society Open Science by synthesizing related work, analyzing experimental results, and communicating technical findings clearly and rigorously for publication.",
-      "Designed and implemented full-stack AI tutoring prototypes that used GPT-powered document parsing, section-aware explanations, guided questions, and interactive study workflows to support academic reading comprehension. (See the PAIT project in the Projects section for more details.)",
+      "Designed and implemented full-stack AI tutoring prototypes that used GPT-powered document parsing, section-aware explanations, guided questions, and interactive study workflows to support academic reading comprehension. (See the PAIT project in the [[projects:Projects section]] for more details.)",
     ],
     publication: {
       title: "Text understanding in GPT-4 versus humans",
@@ -149,6 +149,32 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    name: "Pitch Sitch Predictch",
+    subtitle:
+      "Selective next-pitch prediction for Toronto Blue Jays pitcher Kevin Gausman using Statcast data",
+    stack: [
+      "Python",
+      "Pandas",
+      "scikit-learn",
+      "Statcast",
+      "pybaseball",
+      "Machine Learning",
+    ],
+    bullets: [
+      "Question: Can Kevin Gausman’s next pitch type be predicted using only information available before the pitch, and can a model identify when its prediction is reliable enough to be useful?",
+      "Approach: Built a leakage-aware Python pipeline over 14,773 cleaned Statcast pitches, engineering features from the count, recent pitch sequence, outcomes, handedness, location, and game context, with games separated between training and evaluation.",
+      "Results: Compared simple baselines, logistic regression, and neural networks; a 10-model MLP ensemble reached **58.5%** accuracy versus a 52.1% baseline, and **75.0%** accuracy on the 23% of pitches above 65% confidence.",
+      "Next Steps: Extending the model with richer batter and pitch-sequence context, validating it prospectively on future games, and generalizing the pipeline across additional pitchers and hitters.",
+    ],
+    links: [
+      {
+        label: "GitHub / Full Write-up",
+        url: "https://github.com/wisejamie/pitch_sitch_predictch",
+        kind: "github",
+      },
+    ],
+  },
+  {
     name: "Clinical Converter",
     subtitle: "HL7 v2 to FHIR R4 healthcare interoperability tool",
     stack: [
@@ -160,9 +186,10 @@ export const PROJECTS: Project[] = [
       "CLI tooling",
     ],
     bullets: [
-      "Built a full-stack healthcare interoperability tool that converts legacy HL7 v2 hospital EMR messages into structured FHIR R4 JSON Bundles and human-readable clinical summaries.",
-      "Implemented a FastAPI backend to ingest, validate, and transform clinical messages end-to-end, mapping patient demographics, encounters, observations, related persons, and allergies into standardized FHIR resources.",
-      "Added deterministic fact-based summaries, optional GPT-generated narrative summaries, synthetic HL7 generation, CLI tooling, automated tests, and a deployed Next.js web demo.",
+      "Problem: Healthcare systems still exchange large amounts of clinical data through legacy HL7 v2 messages, while modern applications increasingly rely on standardized FHIR resources.",
+      "Approach: Built a full-stack pipeline that ingests, validates, and converts HL7 v2 messages into FHIR R4 JSON Bundles, mapping demographics, encounters, observations, related persons, and allergies.",
+      "Engineering Decisions: Kept core transformations and summaries deterministic for reliability, while offering optional GPT-generated narrative summaries as a separate layer.",
+      "Outcome: Delivered a deployed Next.js demo, FastAPI backend, reusable CLI, synthetic message generator, and automated tests covering the end-to-end conversion workflow.",
     ],
     links: [
       {
@@ -190,9 +217,9 @@ export const PROJECTS: Project[] = [
       "OpenAI API",
     ],
     bullets: [
-      "Built a full-stack AI study app that converts lecture PDFs or pasted text into organized flashcard sets, summaries, and quiz material.",
-      "Designed an LLM generation pipeline for concept extraction, flashcard creation, content filtering, and deduplication from PDFs or pasted text.",
-      "Created an interactive frontend for managing study sets, editing cards, reviewing material, taking quizzes, tracking progress, and importing/exporting data.",
+      "Problem: Lecture notes and PDFs are often too long and unstructured for students to turn into effective study material efficiently (especially students who put off studying for psychology a little too long).",
+      "Approach: Built a full-stack AI study app that converts uploaded PDFs or pasted text into organized flashcards, summaries, and quizzes.",
+      "Product and Engineering: Designed an LLM pipeline for concept extraction, filtering, and deduplication, alongside an interactive frontend for editing cards, reviewing material, tracking progress, and importing or exporting study sets.",
     ],
     links: [
       {
@@ -213,9 +240,10 @@ export const PROJECTS: Project[] = [
       "Personal AI Tutor for complex academic papers (while working with Professor Shultz at McGill)",
     stack: ["FastAPI", "React", "Vite", "Python", "OpenAI API"],
     bullets: [
-      "Built a full-stack AI learning app that turns uploaded PDFs and text documents into interactive study experiences with section navigation, summaries, quizzes, and tutor-style Q&A.",
-      "Developed a document-processing pipeline to identify paper structure and map AI-generated section anchors back to the original text using fuzzy matching. The fuzzy matching algorithm reduces LLM token usage by ~88% while preserving accuracy.",
-      "Implemented interactive learning flows including text simplification, multiple-choice quiz sessions, and open-ended tutor-style comprehension checks.",
+      "Problem: Explored how AI could help users actively understand complex academic papers rather than simply summarize them or answer isolated questions.",
+      "Approach: Built a full-stack tutor that identifies document structure and supports section-aware explanations, simplification, quizzes, and open-ended comprehension checks.",
+      "Technical Decision: Developed a fuzzy-matching pipeline that maps AI-generated section anchors back to the original document instead of repeatedly regenerating full section text.",
+      "Result: Reduced LLM token usage by approximately **88%** while preserving section-matching accuracy and enabling faster, more structured learning workflows.",
     ],
   },
   {
@@ -232,7 +260,7 @@ export const PROJECTS: Project[] = [
     bullets: [
       "Won the Social/Community Wellness Award at McGill CodeJam 12 (with a $500 prize) for building a browser tool to combat misinformation online.",
       "Built a Chrome extension that scraped tweets from a user’s timeline and surfaced relevant news articles to add context to posts they interacted with.",
-      "Created with two close friends during our first semester at McGill.",
+      "Worked and presented the project with two close friends during our first semester at McGill.",
     ],
     links: [
       {
@@ -270,7 +298,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["exchange", "ocean", "city"],
     mapX: 919,
     mapY: 344,
-    photos: ["/images/trips/Aus1.JPG", "/images/trips/Aus2.JPG", "/images/trips/Aus3.JPG"],
+    photos: [
+      "/images/trips/Aus1.JPG",
+      "/images/trips/Aus2.JPG",
+      "/images/trips/Aus3.JPG",
+    ],
   },
   {
     id: "newzealand",
@@ -281,7 +313,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["road trip", "mountains", "nature"],
     mapX: 971,
     mapY: 372,
-    photos: ["/images/trips/NZ1.JPG", "/images/trips/NZ2.JPG", "/images/trips/NZ3.JPG"],
+    photos: [
+      "/images/trips/NZ1.JPG",
+      "/images/trips/NZ2.JPG",
+      "/images/trips/NZ3.JPG",
+    ],
   },
   {
     id: "seasia",
@@ -292,7 +328,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["backpacking", "food", "history"],
     mapX: 783,
     mapY: 208,
-    photos: ["/images/trips/Asia1.JPEG", "/images/trips/Asia2.jpg", "/images/trips/Asia3.JPG"],
+    photos: [
+      "/images/trips/Asia1.JPEG",
+      "/images/trips/Asia2.jpg",
+      "/images/trips/Asia3.JPG",
+    ],
   },
   {
     id: "banff",
@@ -303,7 +343,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["mountains", "lakes", "hiking"],
     mapX: 181,
     mapY: 108,
-    photos: ["/images/trips/Banff1.jpg", "/images/trips/Banff2.jpg", "/images/trips/Banff3.jpg"],
+    photos: [
+      "/images/trips/Banff1.jpg",
+      "/images/trips/Banff2.jpg",
+      "/images/trips/Banff3.jpg",
+    ],
   },
   {
     id: "montreal",
@@ -314,7 +358,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["city", "university", "skiing"],
     mapX: 296,
     mapY: 122,
-    photos: ["/images/trips/Ski1.jpg", "/images/trips/Ski2.jpg", "/images/trips/Ski3.JPG"],
+    photos: [
+      "/images/trips/Ski1.jpg",
+      "/images/trips/Ski2.jpg",
+      "/images/trips/Ski3.JPG",
+    ],
   },
   {
     id: "california",
@@ -326,7 +374,11 @@ export const TRIPS: TripEntry[] = [
     tags: ["road trip", "camping", "surfing"],
     mapX: 168,
     mapY: 147,
-    photos: ["/images/trips/Cali1.JPG", "/images/trips/Cali2.JPG", "/images/trips/Cali3.JPG"],
+    photos: [
+      "/images/trips/Cali1.JPG",
+      "/images/trips/Cali2.JPG",
+      "/images/trips/Cali3.JPG",
+    ],
   },
 ];
 
