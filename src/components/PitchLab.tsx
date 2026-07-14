@@ -440,7 +440,7 @@ export function PitchLab() {
               <AboutSection isMobile={isMobile} />
             )}
             {selectedPitch.section === 'experience' && (
-              <ExperienceSection isMobile={isMobile} />
+              <ExperienceSection isMobile={isMobile} onNavigateToSection={handleSectionSelect} />
             )}
             {selectedPitch.section === 'projects' && (
               <ProjectsSection isMobile={isMobile} />

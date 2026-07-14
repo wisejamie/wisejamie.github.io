@@ -1,12 +1,59 @@
 import { EXPERIENCE_ROLES } from "../data/portfolio";
 import type { Publication } from "../data/portfolio";
+import type { SectionId } from "../data/pitches";
 import { LinkChips } from "./LinkChips";
+
+const GOLD = "#d4a030";
+
+// Matches an in-bullet section link, e.g. "[[projects:Projects section]]"
+const SECTION_LINK_PATTERN = /\[\[(\w+):([^\]]+)\]\]/g;
+
+function renderBulletText(
+  text: string,
+  onNavigateToSection?: (sectionId: SectionId) => void
+) {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  SECTION_LINK_PATTERN.lastIndex = 0;
+  while ((match = SECTION_LINK_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
+    const sectionId = match[1] as SectionId;
+    const label = match[2];
+    nodes.push(
+      <span
+        key={key++}
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigateToSection?.(sectionId);
+        }}
+        style={{
+          color: GOLD,
+          fontWeight: 700,
+          textDecoration: "underline",
+          textUnderlineOffset: "2px",
+          cursor: "pointer",
+        }}
+      >
+        {label}
+      </span>
+    );
+    lastIndex = SECTION_LINK_PATTERN.lastIndex;
+  }
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
+  return nodes;
+}
 
 interface ExperienceSectionProps {
   isMobile?: boolean;
+  onNavigateToSection?: (sectionId: SectionId) => void;
 }
 
-export function ExperienceSection({ isMobile = false }: ExperienceSectionProps) {
+export function ExperienceSection({
+  isMobile = false,
+  onNavigateToSection,
+}: ExperienceSectionProps) {
   return (
     <div style={{ width: "100%" }}>
       {EXPERIENCE_ROLES.map((role, i) => (
@@ -112,7 +159,7 @@ export function ExperienceSection({ isMobile = false }: ExperienceSectionProps) 
                     lineHeight: 1.65,
                   }}
                 >
-                  {bullet}
+                  {renderBulletText(bullet, onNavigateToSection)}
                 </span>
               </li>
             ))}
