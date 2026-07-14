@@ -1,6 +1,31 @@
 import { PROJECTS } from "../data/portfolio";
 import { LinkChips } from "./LinkChips";
 
+const GOLD = "#d4a030";
+
+// Matches a leading "Label: " prefix, e.g. "Approach:", "Next Steps:", "Product and Engineering:"
+const LABEL_PATTERN = /^([A-Z][A-Za-z]*(?:\s(?:and\s)?[A-Z][A-Za-z]*)*):\s(.+)$/s;
+
+// Marks standout metrics to highlight, e.g. "**58.5%**" — wrap only the numbers that should pop
+const HIGHLIGHT_PATTERN = /\*\*(.+?)\*\*/g;
+
+function splitBulletLabel(bullet: string): { label: string | null; rest: string } {
+  const match = bullet.match(LABEL_PATTERN);
+  return match ? { label: match[1], rest: match[2] } : { label: null, rest: bullet };
+}
+
+function renderBulletText(text: string) {
+  return text.split(HIGHLIGHT_PATTERN).map((part, i) =>
+    i % 2 === 1 ? (
+      <span key={i} style={{ color: GOLD, fontWeight: 700 }}>
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+}
+
 interface ProjectsSectionProps {
   isMobile?: boolean;
 }
@@ -68,40 +93,56 @@ export function ProjectsSection({ isMobile = false }: ProjectsSectionProps) {
 
           {/* Bullets */}
           <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-            {project.bullets.map((bullet, j) => (
-              <li
-                key={j}
-                style={{
-                  display: "flex",
-                  gap: 12,
-                  marginBottom: 10,
-                  alignItems: "flex-start",
-                }}
-              >
-                <span
+            {project.bullets.map((bullet, j) => {
+              const { label, rest } = splitBulletLabel(bullet);
+              return (
+                <li
+                  key={j}
                   style={{
-                    color: "#638971",
-                    flexShrink: 0,
-                    fontFamily: "monospace",
-                    fontSize: 14,
-                    lineHeight: 1.65,
-                    userSelect: "none",
+                    display: "flex",
+                    gap: 12,
+                    marginBottom: 10,
+                    alignItems: "flex-start",
                   }}
                 >
-                  •
-                </span>
-                <span
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: isMobile ? 13 : 14,
-                    color: "#c8c4b8",
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {bullet}
-                </span>
-              </li>
-            ))}
+                  <span
+                    style={{
+                      color: "#638971",
+                      flexShrink: 0,
+                      fontFamily: "monospace",
+                      fontSize: 14,
+                      lineHeight: 1.65,
+                      userSelect: "none",
+                    }}
+                  >
+                    •
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: isMobile ? 13 : 14,
+                      color: "#c8c4b8",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {label && (
+                      <span
+                        style={{
+                          color: GOLD,
+                          fontWeight: 700,
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                          fontSize: isMobile ? 11 : 12,
+                        }}
+                      >
+                        {label}:{" "}
+                      </span>
+                    )}
+                    {renderBulletText(rest)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
 
           {/* Link chips */}
